@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>teste pag ini</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f0f0f0;
+    }
+    .container {
+        width: 80%;
+        margin: 20px auto;
+        overflow: hidden;
+        position: relative; /* Adicionado para o posicionamento dos botões de navegação */
+    }
+    .slider {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch; /* Suporte para scrolling suave em iOS */
+    }
+    .produto {
+        flex: 0 0 auto;
+        scroll-snap-align: start;
+        width: 300px;
+        margin-right: 20px;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        padding: 20px;
+        box-sizing: border-box;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="slider" onwheel="handleWheel(event)">
+        <div class="produto">
+            <h2>Produto 1</h2>
+            <p>Descrição do Produto 1.</p>
+        </div>
+        <div class="produto">
+            <h2>Produto 2</h2>
+            <p>Descrição do Produto 2.</p>
+        </div>
+        <div class="produto">
+            <h2>Produto 3</h2>
+            <p>Descrição do Produto 3.</p>
+        </div>
+        <div class="produto">
+            <h2>Produto 4</h2>
+            <p>Descrição do Produto 4.</p>
+        </div>
+        <!-- Adicione mais produtos conforme necessário -->
+    </div>
+</div>
+
+<script>
+    function handleWheel(event) {
+        const delta = Math.sign(event.deltaY);
+        const slider = document.querySelector('.slider');
+        const larguraProduto = document.querySelector('.produto').offsetWidth + 20; // Largura do produto + margin-right
+
+        if (delta > 0) {
+            // Scroll down
+            slider.scrollBy({
+                left: larguraProduto,
+                behavior: 'smooth'
+            });
+        } else {
+            // Scroll up
+            slider.scrollBy({
+                left: -larguraProduto,
+                behavior: 'smooth'
+            });
+        }
+
+        // Impede a rolagem padrão da página
+        event.preventDefault();
+    }
+</script>
+
+</body>
+</html>
