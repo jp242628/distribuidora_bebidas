@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pagina Teste para a home</title>
+<title>Exemplo de Navegação de Produtos com Imagens e Scroll do Mouse</title>
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -15,7 +15,7 @@
         width: 80%;
         margin: 20px auto;
         overflow: hidden;
-        position: relative; /* Adicionado para o posicionamento dos botões de navegação */
+        position: relative;
     }
     .slider {
         display: flex;
@@ -32,12 +32,13 @@
         box-shadow: 0 0 10px rgba(0,0,0,0.1);
         padding: 20px;
         box-sizing: border-box;
+        text-align: center; /* Centraliza o texto e a imagem */
     }
     .produto img {
-        max-width: 100%;
-        height: auto;
+        max-height: 200px; /* Define uma altura máxima para as imagens */
+        width: auto; /* Ajusta a largura proporcionalmente */
         display: block;
-        margin-bottom: 10px;
+        margin: 0 auto 10px auto; /* Centraliza a imagem e adiciona margem inferior */
     }
 </style>
 </head>
