@@ -6,12 +6,14 @@ const app = express();
 const port = 3000;
 
 // Configurar a conexão com o banco de dados
-const db = mysql.createConnection({
+const dbConfig = {
     host: 'localhost',
     user: 'root',
     password: '12',
     database: 'Distribuidora_Bebidas'
-});
+};
+
+const db = mysql.createConnection(dbConfig);
 
 db.connect((err) => {
     if (err) {
@@ -85,7 +87,7 @@ app.get('/login', (req, res) => {
     res.render('login');
 });
 
-// Rota para login
+// Rota para login de usuário
 app.post('/login', (req, res) => {
     const email = req.body.email;
 
@@ -103,7 +105,7 @@ app.post('/login', (req, res) => {
     });
 });
 
-// Rota para cadastro
+// Rota para cadastro de usuário
 app.post('/register', (req, res) => {
     const email = req.body.email;
 
@@ -115,6 +117,27 @@ app.post('/register', (req, res) => {
 
         res.json({ success: true });
     });
+});
+
+// Rota para renderizar a página de login de administrador
+app.get('/admin-login', (req, res) => {
+    res.render('admin-login');
+});
+
+// Rota para autenticação de administrador
+app.post('/admin-login', (req, res) => {
+    const { username, password } = req.body;
+
+    if (username === dbConfig.user && password === dbConfig.password) {
+        res.json({ success: true });
+    } else {
+        res.json({ success: false });
+    }
+});
+
+// Rota para renderizar o painel do administrador
+app.get('/admin-panel', (req, res) => {
+    res.send('<h1>Painel do Administrador</h1>');
 });
 
 app.listen(port, () => {

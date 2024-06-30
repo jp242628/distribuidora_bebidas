@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login - Distribuidora de Bebidas</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        block-size: 100vh;
+        margin: 0;
+    }
+    .container {
+        background-color: #fff;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        border-radius: 8px;
+        text-align: center;
+        inline-size: 300px;
+    }
+    input[type="text"], input[type="password"] {
+        inline-size: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    button {
+        background-color: #333;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+        border-radius: 4px;
+        margin-block-start: 10px;
+    }
+    .error-message {
+        color: red;
+        margin-block-start: 10px;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Admin Login</h2>
+    <input type="text" id="username" placeholder="Usuário">
+    <input type="password" id="password" placeholder="Senha">
+    <button onclick="adminLogin()">Entrar</button>
+    <div id="error-message" class="error-message"></div>
+</div>
+
+<script>
+    async function adminLogin() {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        
+        const response = await fetch('/admin-login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            window.location.href = '/admin-panel';
+        } else {
+            document.getElementById('error-message').textContent = 'Erro: Usuário ou senha errados';
+        }
+    }
+</script>
+
+</body>
+</html>
