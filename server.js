@@ -80,6 +80,11 @@ app.get('/', (req, res) => {
     res.render('index');
 });
 
+// Rota para renderizar a página de login
+app.get('/login', (req, res) => {
+    res.render('login');
+});
+
 // Rota para login
 app.post('/login', (req, res) => {
     const email = req.body.email;
@@ -110,11 +115,6 @@ app.post('/register', (req, res) => {
 
         res.json({ success: true });
     });
-});
-
-// Servir o arquivo HTML
-app.get('/', (req, res) => {
-    res.render('login');
 });
 
 app.listen(port, () => {
