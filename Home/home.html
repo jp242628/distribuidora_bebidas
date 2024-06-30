@@ -3,13 +3,61 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Exemplo de Navegação de Produtos com Imagens e Scroll do Mouse</title>
+<title>Distribuidora de Bebidas</title>
 <style>
     body {
         font-family: Arial, sans-serif;
         margin: 0;
         padding: 0;
         background-color: #f0f0f0;
+    }
+    .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #333;
+        color: #fff;
+        padding: 10px 20px;
+    }
+    .navbar img {
+        border-radius: 50%;
+        height: 40px;
+        width: 40px;
+        margin-right: 10px;
+    }
+    .navbar .logo {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+    .navbar .logo h1 {
+        margin: 0;
+    }
+    .navbar .actions {
+        display: flex;
+        align-items: center;
+    }
+    .navbar .actions button {
+        background-color: #fff;
+        color: #333;
+        border: none;
+        padding: 10px;
+        cursor: pointer;
+        margin-left: 10px;
+        position: relative;
+    }
+    .navbar .actions .sacola {
+        position: relative;
+    }
+    .navbar .actions .sacola .item-count {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background-color: red;
+        color: white;
+        border-radius: 50%;
+        padding: 2px 5px;
+        font-size: 12px;
     }
     .container {
         width: 80%;
@@ -40,31 +88,66 @@
         display: block;
         margin: 0 auto 10px auto; /* Centraliza a imagem e adiciona margem inferior */
     }
+    .produto button {
+        background-color: #333;
+        color: #fff;
+        border: none;
+        padding: 10px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+    h1 {
+        text-align: center;
+        margin-top: 20px;
+    }
 </style>
 </head>
 <body>
 
+<!-- Navbar -->
+<div class="navbar">
+    <div class="logo" onclick="window.location.href='home.html'">
+        <img src="logo.png" alt="Distribuidora Logo">
+        <h1>Distribuidora de Bebidas</h1>
+    </div>
+    <div class="actions">
+        <button onclick="window.location.href='login.html'">Entrar</button>
+        <button class="sacola" onclick="window.location.href='sacola.html'">
+            SACOLA
+            <div class="item-count">0</div>
+        </button>
+    </div>
+</div>
+
+<!-- Título -->
+<h1>Cervejas</h1>
+
+<!-- Slider de Produtos -->
 <div class="container">
     <div class="slider" onwheel="handleWheel(event)">
         <div class="produto">
             <img src="Garrafa_de_Cerveja_Brahma_Chope_300ML_PNG_Transparente_Sem_Fundo.png" alt="Produto 1">
             <h2>Brahma 300ml</h2>
             <p>Garrafa de Cerveja Brahma Chope 300ML.</p>
+            <button>Adicionar à sacola</button>
         </div>
         <div class="produto">
             <img src="produto2.png" alt="Produto 2">
             <h2>Produto 2</h2>
             <p>Descrição do Produto 2.</p>
+            <button>Adicionar à sacola</button>
         </div>
         <div class="produto">
             <img src="produto3.png" alt="Produto 3">
             <h2>Produto 3</h2>
             <p>Descrição do Produto 3.</p>
+            <button>Adicionar à sacola</button>
         </div>
         <div class="produto">
             <img src="produto4.png" alt="Produto 4">
             <h2>Produto 4</h2>
             <p>Descrição do Produto 4.</p>
+            <button>Adicionar à sacola</button>
         </div>
         <!-- Adicione mais produtos conforme necessário -->
     </div>
