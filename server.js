@@ -1,7 +1,7 @@
 const express = require('express');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
-const path = require('path'); 
+const path = require('path');
 const app = express();
 const port = 3000;
 
@@ -28,10 +28,12 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// Middleware para servir arquivos estáticos
+app.use(express.static(path.join(__dirname, 'public')));
+
 // Rota para adicionar um produto
 app.post('/addProduct', (req, res) => {
     const { ID, Nome, Descricao, Preco, FornecedorID } = req.body;
-    // Verificar se o FornecedorID existe
     const checkQuery = 'SELECT * FROM Fornecedores WHERE ID = ?';
     db.query(checkQuery, [FornecedorID], (err, results) => {
         if (err) {
@@ -76,6 +78,43 @@ app.get('/listProducts', (req, res) => {
 // Servir o arquivo HTML
 app.get('/', (req, res) => {
     res.render('index');
+});
+
+// Rota para login
+app.post('/login', (req, res) => {
+    const email = req.body.email;
+
+    const query = 'SELECT * FROM Clientes WHERE Email = ?';
+    db.query(query, [email], (err, results) => {
+        if (err) {
+            return res.status(500).json({ success: false, message: 'Erro no servidor' });
+        }
+
+        if (results.length > 0) {
+            res.json({ success: true });
+        } else {
+            res.json({ success: false });
+        }
+    });
+});
+
+// Rota para cadastro
+app.post('/register', (req, res) => {
+    const email = req.body.email;
+
+    const query = 'INSERT INTO Clientes (Email) VALUES (?)';
+    db.query(query, [email], (err, results) => {
+        if (err) {
+            return res.status(500).json({ success: false, message: 'Erro no servidor' });
+        }
+
+        res.json({ success: true });
+    });
+});
+
+// Servir o arquivo HTML
+app.get('/', (req, res) => {
+    res.render('login');
 });
 
 app.listen(port, () => {
