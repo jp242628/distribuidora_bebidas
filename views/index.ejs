@@ -1,164 +1,182 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciamento de Produtos</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f0f0;
-        }
-        h1, h2 {
-            color: #333;
-        }
-        form {
-            background-color: #fff;
-            margin: 20px;
-            padding: 20px;
-            border-radius: 5px;
-        }
-        label {
-            display: block;
-            margin-bottom: 10px;
-        }
-        input[type="text"], input[type="number"] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-        input[type="submit"] {
-            background-color: #4CAF50;
-            color: white;
-            padding: 15px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        input[type="submit"]:hover {
-            background-color: #45a049;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-        table, th, td {
-            border: 1px solid #ccc;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Distribuidora de Bebidas</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f0f0f0;
+    }
+    .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #333;
+        color: #fff;
+        padding: 10px 20px;
+    }
+    .navbar img {
+        border-radius: 50%;
+        height: 40px;
+        width: 40px;
+        margin-right: 10px;
+    }
+    .navbar .logo {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+    .navbar .logo h1 {
+        margin: 0;
+    }
+    .navbar .actions {
+        display: flex;
+        align-items: center;
+    }
+    .navbar .actions button {
+        background-color: #fff;
+        color: #333;
+        border: none;
+        padding: 10px;
+        cursor: pointer;
+        margin-left: 10px;
+        position: relative;
+    }
+    .navbar .actions .sacola {
+        position: relative;
+    }
+    .navbar .actions .sacola .item-count {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background-color: red;
+        color: white;
+        border-radius: 50%;
+        padding: 2px 5px;
+        font-size: 12px;
+    }
+    .container {
+        width: 80%;
+        margin: 20px auto;
+        overflow: hidden;
+        position: relative;
+    }
+    .slider {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch; /* Suporte para scrolling suave em iOS */
+    }
+    .produto {
+        flex: 0 0 auto;
+        scroll-snap-align: start;
+        width: 300px;
+        margin-right: 20px;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        padding: 20px;
+        box-sizing: border-box;
+        text-align: center; /* Centraliza o texto e a imagem */
+    }
+    .produto img {
+        max-height: 200px; /* Define uma altura máxima para as imagens */
+        width: auto; /* Ajusta a largura proporcionalmente */
+        display: block;
+        margin: 0 auto 10px auto; /* Centraliza a imagem e adiciona margem inferior */
+    }
+    .produto button {
+        background-color: #333;
+        color: #fff;
+        border: none;
+        padding: 10px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+    h1 {
+        text-align: center;
+        margin-top: 20px;
+    }
+</style>
 </head>
 <body>
-    
-    <h1>Gerenciamento de Produtos</h1>
 
-    <h2>Lista de Produtos</h2>
-    <table id="productsTable">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>Descrição</th>
-                <th>Preço</th>
-                <th>Fornecedor ID</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Os produtos serão inseridos aqui -->
-        </tbody>
-    </table>
+<!-- Navbar -->
+<div class="navbar">
+    <div class="logo" onclick="window.location.href='index'">
+        <img src="logo.png" alt="Distribuidora Logo">
+        <h1>Distribuidora de Bebidas</h1>
+    </div>
+    <div class="actions">
+        <button onclick="window.location.href='login'">Entrar</button>
+        <button class="sacola" onclick="window.location.href='sacola'">
+            SACOLA
+            <div class="item-count">0</div>
+        </button>
+    </div>
+</div>
 
-    <h2>Adicionar Produto</h2>
-    <form id="addProductForm">
-        <label for="ID">ID do Produto:</label><br>
-        <input type="number" id="ID" name="ID"><br>
-        <label for="Nome">Nome:</label><br>
-        <input type="text" id="Nome" name="Nome"><br>
-        <label for="Descricao">Descrição:</label><br>
-        <input type="text" id="Descricao" name="Descricao"><br>
-        <label for="Preco">Preço:</label><br>
-        <input type="number" step="0.01" id="Preco" name="Preco"><br>
-        <label for="FornecedorID">Fornecedor ID:</label><br>
-        <input type="number" id="FornecedorID" name="FornecedorID"><br><br>
-        <input type="submit" value="Adicionar Produto">
-    </form>
+<!-- Título -->
+<h1>Cervejas</h1>
 
-    <h2>Remover Produto</h2>
-    <form id="removeProductForm">
-        <label for="ID">ID do Produto:</label><br>
-        <input type="number" id="ID" name="ID"><br><br>
-        <input type="submit" value="Remover Produto">
-    </form>
+<!-- Slider de Produtos -->
+<div class="container">
+    <div class="slider" onwheel="handleWheel(event)">
+        <div class="produto">
+            <img src="/Garrafa_de_Cerveja_Brahma_Chope_300ML_PNG_Transparente_Sem_Fundo.png" alt="Produto 1">
+            <h2>Brahma 300ml</h2>
+            <p>Garrafa de Cerveja Brahma Chope 300ML.</p>
+            <button>Adicionar à sacola</button>
+        </div>
+        <div class="produto">
+            <img src="produto2.png" alt="Produto 2">
+            <h2>Produto 2</h2>
+            <p>Descrição do Produto 2.</p>
+            <button>Adicionar à sacola</button>
+        </div>
+        <div class="produto">
+            <img src="produto3.png" alt="Produto 3">
+            <h2>Produto 3</h2>
+            <p>Descrição do Produto 3.</p>
+            <button>Adicionar à sacola</button>
+        </div>
+        <div class="produto">
+            <img src="produto4.png" alt="Produto 4">
+            <h2>Produto 4</h2>
+            <p>Descrição do Produto 4.</p>
+            <button>Adicionar à sacola</button>
+        </div>
+        <!-- Adicione mais produtos conforme necessário -->
+    </div>
+</div>
 
-    <script>
-        document.getElementById('addProductForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            const formData = new FormData(event.target);
-            const data = Object.fromEntries(formData.entries());
-            fetch('/addProduct', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.text())
-            .then(data => {
-                alert(data);
-                loadProducts();
-            })
-            .catch(error => console.error('Erro:', error));
-        });
+<script>
+    function handleWheel(event) {
+        const delta = Math.sign(event.deltaY);
+        const slider = document.querySelector('.slider');
+        const larguraProduto = document.querySelector('.produto').offsetWidth + 20; // Largura do produto + margin-right
 
-        document.getElementById('removeProductForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            const formData = new FormData(event.target);
-            const data = Object.fromEntries(formData.entries());
-            fetch('/removeProduct', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.text())
-            .then(data => {
-                alert(data);
-                loadProducts();
-            })
-            .catch(error => console.error('Erro:', error));
-        });
-
-        function loadProducts() {
-            fetch('/listProducts')
-                .then(response => response.json())
-                .then(products => {
-                    const productsTableBody = document.querySelector('#productsTable tbody');
-                    productsTableBody.innerHTML = '';
-                    products.forEach(product => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${product.ID}</td>
-                            <td>${product.Nome}</td>
-                            <td>${product.Descricao}</td>
-                            <td>${product.Preco}</td>
-                            <td>${product.FornecedorID}</td>
-                        `;
-                        productsTableBody.appendChild(row);
-                    });
-                })
-                .catch(error => console.error('Erro:', error));
+        if (delta > 0) {
+            // Scroll down
+            slider.scrollBy({
+                left: larguraProduto,
+                behavior: 'smooth'
+            });
+        } else {
+            // Scroll up
+            slider.scrollBy({
+                left: -larguraProduto,
+                behavior: 'smooth'
+            });
         }
 
-        // Carregar os produtos ao carregar a página
-        document.addEventListener('DOMContentLoaded', loadProducts);
-    </script>
+        // Impede a rolagem padrão da página
+        event.preventDefault();
+    }
+</script>
+
 </body>
 </html>
