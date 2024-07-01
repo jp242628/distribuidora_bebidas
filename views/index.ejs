@@ -21,9 +21,9 @@
     }
     .navbar img {
         border-radius: 50%;
-        height: 40px;
-        width: 40px;
-        margin-right: 10px;
+        block-size: 40px;
+        inline-size: 40px;
+        margin-inline-end: 10px;
     }
     .navbar .logo {
         display: flex;
@@ -43,7 +43,7 @@
         border: none;
         padding: 10px;
         cursor: pointer;
-        margin-left: 10px;
+        margin-inline-start: 10px;
         position: relative;
     }
     .navbar .actions .sacola {
@@ -51,8 +51,8 @@
     }
     .navbar .actions .sacola .item-count {
         position: absolute;
-        top: -5px;
-        right: -5px;
+        inset-block-start: -5px;
+        inset-inline-end: -5px;
         background-color: red;
         color: white;
         border-radius: 50%;
@@ -60,7 +60,7 @@
         font-size: 12px;
     }
     .container {
-        width: 80%;
+        inline-size: 80%;
         margin: 20px auto;
         overflow: hidden;
         position: relative;
@@ -74,8 +74,8 @@
     .produto {
         flex: 0 0 auto;
         scroll-snap-align: start;
-        width: 300px;
-        margin-right: 20px;
+        inline-size: 300px;
+        margin-inline-end: 20px;
         background-color: #fff;
         box-shadow: 0 0 10px rgba(0,0,0,0.1);
         padding: 20px;
@@ -83,10 +83,11 @@
         text-align: center; /* Centraliza o texto e a imagem */
     }
     .produto img {
-        max-height: 200px; /* Define uma altura máxima para as imagens */
-        width: auto; /* Ajusta a largura proporcionalmente */
+        max-block-size: 200px; /* Define uma altura máxima para as imagens */
+        inline-size: auto; /* Ajusta a largura proporcionalmente */
         display: block;
         margin: 0 auto 10px auto; /* Centraliza a imagem e adiciona margem inferior */
+        border-radius: 8px; /* Adiciona borda arredondada à imagem */
     }
     .produto button {
         background-color: #333;
@@ -94,11 +95,11 @@
         border: none;
         padding: 10px;
         cursor: pointer;
-        margin-top: 10px;
+        margin-block-start: 10px;
     }
     h1 {
         text-align: center;
-        margin-top: 20px;
+        margin-block-start: 20px;
     }
 </style>
 </head>
@@ -111,7 +112,12 @@
         <h1>Distribuidora de Bebidas</h1>
     </div>
     <div class="actions">
-        <button onclick="window.location.href='login'">Entrar</button>
+        <% if (user) { %>
+            <img src="profile.png" alt="Profile Picture" style="border-radius: 50%; block-size: 40px; inline-size: 40px; margin-inline-end: 10px;">
+            <h2>Olá, <%= user.Nome %>!</h2>
+        <% } else { %>
+            <button onclick="window.location.href='login'">Entrar</button>
+        <% } %>
         <button class="sacola" onclick="window.location.href='sacola'">
             SACOLA
             <div class="item-count">0</div>
@@ -162,13 +168,13 @@
         if (delta > 0) {
             // Scroll down
             slider.scrollBy({
-                left: larguraProduto,
+                inlineStart: larguraProduto, // Use 'inlineStart' instead of 'left'
                 behavior: 'smooth'
             });
         } else {
             // Scroll up
             slider.scrollBy({
-                left: -larguraProduto,
+                inlineStart: -larguraProduto, // Use 'inlineStart' instead of 'left'
                 behavior: 'smooth'
             });
         }

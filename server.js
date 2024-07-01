@@ -33,6 +33,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Middleware para servir arquivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Rota para renderizar a página inicial (index)
+app.get('/', (req, res) => {
+    res.render('index', { user: null }); // Envie null se nenhum usuário estiver logado inicialmente
+});
+
 // Rota para adicionar um produto
 app.post('/addProduct', (req, res) => {
     const { ID, Nome, Descricao, Preco, FornecedorID } = req.body;
@@ -77,11 +82,6 @@ app.get('/listProducts', (req, res) => {
     });
 });
 
-// Servir o arquivo HTML
-app.get('/', (req, res) => {
-    res.render('index');
-});
-
 // Rota para renderizar a página de login
 app.get('/login', (req, res) => {
     res.render('login');
@@ -98,26 +98,33 @@ app.post('/login', (req, res) => {
         }
 
         if (results.length > 0) {
-            res.json({ success: true });
+            res.render('index', { user: results[0] }); // Envie dados do cliente para index.ejs
         } else {
-            res.json({ success: false });
+            res.json({ success: false, message: 'E-mail não encontrado' });
         }
     });
 });
 
 // Rota para cadastro de usuário
 app.post('/register', (req, res) => {
-    const email = req.body.email;
+    const { email, nome, endereco, telefone } = req.body;
 
-    const query = 'INSERT INTO Clientes (Email) VALUES (?)';
-    db.query(query, [email], (err, results) => {
+    const insertQuery = 'INSERT INTO Clientes (Nome, Endereco, Telefone, Email) VALUES (?, ?, ?, ?)';
+    db.query(insertQuery, [nome, endereco, telefone, email], (err, result) => {
         if (err) {
             return res.status(500).json({ success: false, message: 'Erro no servidor' });
         }
 
-        res.json({ success: true });
+        res.render('index', { user: { Nome: nome } }); // Envie nome do cliente para index.ejs
     });
 });
+
+// Função para verificar formato de e-mail
+function isValidEmail(email) {
+    // Implemente sua lógica de validação de e-mail aqui
+    // Exemplo básico: verificar se o e-mail contém "@" e "."
+    return email.includes('@') && email.includes('.');
+}
 
 // Rota para renderizar a página de login de administrador
 app.get('/admin-login', (req, res) => {

@@ -22,7 +22,7 @@
         text-align: center;
         inline-size: 300px;
     }
-    input[type="email"] {
+    input {
         inline-size: 100%;
         padding: 10px;
         margin: 10px 0;
@@ -42,6 +42,10 @@
         background-color: #007BFF;
         margin-block-start: 20px;
     }
+    .error {
+        color: red;
+        margin-block-start: 10px;
+    }
 </style>
 </head>
 <body>
@@ -51,12 +55,33 @@
     <input type="email" id="email" placeholder="E-mail">
     <button onclick="login()">Entrar</button>
     <button class="admin-login" onclick="adminLogin()">Login como Admin</button>
+    <div id="error-message" class="error"></div>
+
+    <!-- Formulário de Cadastro -->
+    <div id="register-form" style="display:none;">
+        <h2>Cadastro</h2>
+        <input type="text" id="nome" placeholder="Nome">
+        <input type="text" id="endereco" placeholder="Endereço">
+        <input type="text" id="telefone" placeholder="Telefone">
+        <button onclick="register()">Cadastrar</button>
+    </div>
 </div>
 
 <script>
+    function validateEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    }
+
     async function login() {
         const email = document.getElementById('email').value;
-        
+        const errorMessage = document.getElementById('error-message');
+
+        if (!validateEmail(email)) {
+            errorMessage.textContent = "Eita, esse e-mail não parece correto.";
+            return;
+        }
+
         const response = await fetch('/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -67,24 +92,36 @@
 
         if (data.success) {
             alert("Bem-vindo de volta! Você está logado.");
-            // Redirecionar para a página de produtos ou dashboard
+            window.location.href = '/'; // Redirecionar para a página inicial
         } else {
             if (confirm("E-mail não encontrado. Deseja criar um novo cadastro?")) {
-                const createResponse = await fetch('/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email })
-                });
-
-                const createData = await createResponse.json();
-
-                if (createData.success) {
-                    alert("Cadastro criado com sucesso! Você está logado.");
-                    // Redirecionar para a página de produtos ou dashboard
-                } else {
-                    alert("Erro ao criar cadastro.");
-                }
+                document.getElementById('register-form').style.display = 'block';
+            } else {
+                errorMessage.textContent = "E-mail não encontrado.";
             }
+        }
+    }
+
+
+    async function register() {
+        const email = document.getElementById('email').value;
+        const nome = document.getElementById('nome').value;
+        const endereco = document.getElementById('endereco').value;
+        const telefone = document.getElementById('telefone').value;
+
+        const response = await fetch('/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, nome, endereco, telefone })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert("Cadastro criado com sucesso! Você está logado.");
+            window.location.href = '/'; // Redirecionar para a página inicial
+        } else {
+            alert("Erro ao criar cadastro.");
         }
     }
 
