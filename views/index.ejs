@@ -107,17 +107,13 @@
 
 <!-- Navbar -->
 <div class="navbar">
-    <div class="logo" onclick="window.location.href='index'">
+    <div class="logo" onclick="window.location.href='/'">
         <img src="logo.png" alt="Distribuidora Logo">
         <h1>Distribuidora de Bebidas</h1>
     </div>
     <div class="actions">
-        <% if (user) { %>
             <img src="profile.png" alt="Profile Picture" style="border-radius: 50%; block-size: 40px; inline-size: 40px; margin-inline-end: 10px;">
-            <h2>Olá, <%= user.Nome %>!</h2>
-        <% } else { %>
             <button onclick="window.location.href='login'">Entrar</button>
-        <% } %>
         <button class="sacola" onclick="window.location.href='sacola'">
             SACOLA
             <div class="item-count">0</div>
@@ -168,19 +164,16 @@
         if (delta > 0) {
             // Scroll down
             slider.scrollBy({
-                inlineStart: larguraProduto, // Use 'inlineStart' instead of 'left'
+                left: larguraProduto,
                 behavior: 'smooth'
             });
         } else {
             // Scroll up
             slider.scrollBy({
-                inlineStart: -larguraProduto, // Use 'inlineStart' instead of 'left'
+                left: -larguraProduto,
                 behavior: 'smooth'
             });
         }
-
-        // Impede a rolagem padrão da página
-        event.preventDefault();
     }
 </script>
 

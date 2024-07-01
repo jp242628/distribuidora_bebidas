@@ -29,13 +29,12 @@ app.set('views', path.join(__dirname, 'views'));
 // Middleware para analisar o corpo das requisições
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public'))); // Middleware para servir arquivos estáticos
 
-// Middleware para servir arquivos estáticos
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Rota para renderizar a página inicial (index)
+// Rota para renderizar a página inicial
 app.get('/', (req, res) => {
-    res.render('index', { user: null }); // Envie null se nenhum usuário estiver logado inicialmente
+    const user = req.query.user ? JSON.parse(req.query.user) : null;
+    res.render('index', { user });
 });
 
 // Rota para adicionar um produto
