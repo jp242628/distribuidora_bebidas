@@ -31,12 +31,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public'))); // Middleware para servir arquivos estáticos
 
-// Rota para renderizar a página inicial
-app.get('/', (req, res) => {
-    const user = req.query.user ? JSON.parse(req.query.user) : null;
-    res.render('index', { user });
-});
-
 // Rota para adicionar um produto
 app.post('/addProduct', (req, res) => {
     const { ID, Nome, Descricao, Preco, FornecedorID } = req.body;
@@ -88,7 +82,7 @@ app.get('/login', (req, res) => {
 
 // Rota para login de usuário
 app.post('/login', (req, res) => {
-    const email = req.body.email;
+    const { email } = req.body;
 
     const query = 'SELECT * FROM Clientes WHERE Email = ?';
     db.query(query, [email], (err, results) => {
@@ -97,33 +91,32 @@ app.post('/login', (req, res) => {
         }
 
         if (results.length > 0) {
-            res.json({ success: true });
+            res.json({ success: true, user: results[0] }); // Retorna sucesso e dados do cliente
         } else {
-            res.json({ success: false });
+            res.json({ success: false, message: 'E-mail não encontrado.' });
         }
     });
 });
 
-// Rota para cadastro de usuário
+// Rota para registro de usuário
 app.post('/register', (req, res) => {
     const { email, nome, endereco, telefone } = req.body;
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        return res.status(400).json({ success: false, message: 'Eita, esse e-mail não parece correto.' });
-    }
-
-    const query = 'INSERT INTO Clientes (Nome, Endereco, Telefone, Email) VALUES (?, ?, ?, ?)';
-    db.query(query, [nome, endereco, telefone, email], (err, results) => {
+    const insertQuery = 'INSERT INTO Clientes (Nome, Endereco, Telefone, Email) VALUES (?, ?, ?, ?)';
+    db.query(insertQuery, [nome, endereco, telefone, email], (err, result) => {
         if (err) {
             return res.status(500).json({ success: false, message: 'Erro no servidor' });
         }
 
-        res.json({ success: true });
+        res.json({ success: true, user: { Nome: nome, Email: email, Endereco: endereco, Telefone: telefone } }); // Retorna sucesso e dados do cliente
     });
 });
 
-
+// Rota para renderizar a página de welcome
+app.get('/', (req, res) => {
+    const user = req.query.user ? JSON.parse(req.query.user) : null;
+    res.render('index', { user });
+});
 
 
 // Função para verificar formato de e-mail

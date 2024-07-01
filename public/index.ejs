@@ -111,15 +111,22 @@
         <img src="logo.png" alt="Distribuidora Logo">
         <h1>Distribuidora de Bebidas</h1>
     </div>
-    <div class="actions">
-            <img src="profile.png" alt="Profile Picture" style="border-radius: 50%; block-size: 40px; inline-size: 40px; margin-inline-end: 10px;">
-            <button onclick="window.location.href='login'">Entrar</button>
-        <button class="sacola" onclick="window.location.href='sacola'">
-            SACOLA
-            <div class="item-count">0</div>
-        </button>
+    <div class="actions" id="user-actions">
+        <% if (!user) { %>
+            <!-- Botão de Entrar -->
+            <button onclick="window.location.href='/login'">Entrar</button>
+        <% } else { %>
+            <!-- Mensagem de Boas-vindas -->
+            <img src="profile.png" alt="Profile Picture">
+            <h2>Olá, <%= user.Nome %>!</h2>
+            <button class="sacola" onclick="window.location.href='sacola'">
+                SACOLA
+                <div class="item-count">0</div>
+            </button>
+        <% } %>
     </div>
 </div>
+
 
 <!-- Título -->
 <h1>Cervejas</h1>

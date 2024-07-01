@@ -73,6 +73,7 @@
         return re.test(email);
     }
 
+    <!-- Script de login -->
     async function login() {
         const email = document.getElementById('email').value;
         const errorMessage = document.getElementById('error-message');
@@ -91,8 +92,8 @@
         const data = await response.json();
 
         if (data.success) {
-            alert("Bem-vindo de volta! Você está logado.");
-            window.location.href = '/'; // Redirecionar para a página inicial
+            const userData = encodeURIComponent(JSON.stringify(data.user)); // Codifica os dados do usuário para URL
+            window.location.href = `/?user=${userData}`; // Redireciona para a página de boas-vindas com dados do usuário
         } else {
             if (confirm("E-mail não encontrado. Deseja criar um novo cadastro?")) {
                 document.getElementById('register-form').style.display = 'block';
@@ -115,13 +116,12 @@
         const data = await response.json();
 
         if (data.success) {
-            alert("Cadastro criado com sucesso! Você está logado.");
-            window.location.href = '/'; // Redirecionar para a página inicial
+            window.location.href = '/'; // Redirecionar para a página de boas-vindas
         } else {
             alert("Erro ao criar cadastro.");
         }
     }
-
+    
     function adminLogin() {
         // Redirecionar para a página de login de administrador
         window.location.href = 'admin-login';
