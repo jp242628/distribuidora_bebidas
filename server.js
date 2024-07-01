@@ -97,9 +97,9 @@ app.post('/login', (req, res) => {
         }
 
         if (results.length > 0) {
-            res.render('index', { user: results[0] }); // Envie dados do cliente para index.ejs
+            res.json({ success: true });
         } else {
-            res.json({ success: false, message: 'E-mail não encontrado' });
+            res.json({ success: false });
         }
     });
 });
@@ -108,15 +108,23 @@ app.post('/login', (req, res) => {
 app.post('/register', (req, res) => {
     const { email, nome, endereco, telefone } = req.body;
 
-    const insertQuery = 'INSERT INTO Clientes (Nome, Endereco, Telefone, Email) VALUES (?, ?, ?, ?)';
-    db.query(insertQuery, [nome, endereco, telefone, email], (err, result) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ success: false, message: 'Eita, esse e-mail não parece correto.' });
+    }
+
+    const query = 'INSERT INTO Clientes (Nome, Endereco, Telefone, Email) VALUES (?, ?, ?, ?)';
+    db.query(query, [nome, endereco, telefone, email], (err, results) => {
         if (err) {
             return res.status(500).json({ success: false, message: 'Erro no servidor' });
         }
 
-        res.render('index', { user: { Nome: nome } }); // Envie nome do cliente para index.ejs
+        res.json({ success: true });
     });
 });
+
+
+
 
 // Função para verificar formato de e-mail
 function isValidEmail(email) {
@@ -149,3 +157,4 @@ app.get('/admin-panel', (req, res) => {
 app.listen(port, () => {
     console.log(`Servidor rodando em http://localhost:${port}`);
 });
+    

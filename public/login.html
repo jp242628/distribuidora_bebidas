@@ -11,7 +11,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        block-size: 100vh;
+        height: 100vh;
         margin: 0;
     }
     .container {
@@ -20,10 +20,10 @@
         box-shadow: 0 0 10px rgba(0,0,0,0.1);
         border-radius: 8px;
         text-align: center;
-        inline-size: 300px;
+        width: 300px;
     }
     input {
-        inline-size: 100%;
+        width: 100%;
         padding: 10px;
         margin: 10px 0;
         border: 1px solid #ccc;
@@ -36,15 +36,15 @@
         padding: 10px 20px;
         cursor: pointer;
         border-radius: 4px;
-        margin-block-start: 10px;
+        margin-top: 10px;
     }
     .admin-login {
         background-color: #007BFF;
-        margin-block-start: 20px;
+        margin-top: 20px;
     }
     .error {
         color: red;
-        margin-block-start: 10px;
+        margin-top: 10px;
     }
 </style>
 </head>
@@ -96,12 +96,9 @@
         } else {
             if (confirm("E-mail não encontrado. Deseja criar um novo cadastro?")) {
                 document.getElementById('register-form').style.display = 'block';
-            } else {
-                errorMessage.textContent = "E-mail não encontrado.";
             }
         }
     }
-
 
     async function register() {
         const email = document.getElementById('email').value;

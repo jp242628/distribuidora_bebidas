@@ -3,177 +3,130 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Distribuidora de Bebidas</title>
+<title>Login - Distribuidora de Bebidas</title>
 <style>
     body {
         font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
         background-color: #f0f0f0;
-    }
-    .navbar {
         display: flex;
-        justify-content: space-between;
+        justify-content: center;
         align-items: center;
-        background-color: #333;
-        color: #fff;
-        padding: 10px 20px;
-    }
-    .navbar img {
-        border-radius: 50%;
-        block-size: 40px;
-        inline-size: 40px;
-        margin-inline-end: 10px;
-    }
-    .navbar .logo {
-        display: flex;
-        align-items: center;
-        cursor: pointer;
-    }
-    .navbar .logo h1 {
+        height: 100vh;
         margin: 0;
-    }
-    .navbar .actions {
-        display: flex;
-        align-items: center;
-    }
-    .navbar .actions button {
-        background-color: #fff;
-        color: #333;
-        border: none;
-        padding: 10px;
-        cursor: pointer;
-        margin-inline-start: 10px;
-        position: relative;
-    }
-    .navbar .actions .sacola {
-        position: relative;
-    }
-    .navbar .actions .sacola .item-count {
-        position: absolute;
-        inset-block-start: -5px;
-        inset-inline-end: -5px;
-        background-color: red;
-        color: white;
-        border-radius: 50%;
-        padding: 2px 5px;
-        font-size: 12px;
     }
     .container {
-        inline-size: 80%;
-        margin: 20px auto;
-        overflow: hidden;
-        position: relative;
-    }
-    .slider {
-        display: flex;
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch; /* Suporte para scrolling suave em iOS */
-    }
-    .produto {
-        flex: 0 0 auto;
-        scroll-snap-align: start;
-        inline-size: 300px;
-        margin-inline-end: 20px;
         background-color: #fff;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
         padding: 20px;
-        box-sizing: border-box;
-        text-align: center; /* Centraliza o texto e a imagem */
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        border-radius: 8px;
+        text-align: center;
+        width: 300px;
     }
-    .produto img {
-        max-block-size: 200px; /* Define uma altura máxima para as imagens */
-        inline-size: auto; /* Ajusta a largura proporcionalmente */
-        display: block;
-        margin: 0 auto 10px auto; /* Centraliza a imagem e adiciona margem inferior */
-        border-radius: 8px; /* Adiciona borda arredondada à imagem */
+    input {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
     }
-    .produto button {
+    button {
         background-color: #333;
         color: #fff;
         border: none;
-        padding: 10px;
+        padding: 10px 20px;
         cursor: pointer;
-        margin-block-start: 10px;
+        border-radius: 4px;
+        margin-top: 10px;
     }
-    h1 {
-        text-align: center;
-        margin-block-start: 20px;
+    .admin-login {
+        background-color: #007BFF;
+        margin-top: 20px;
+    }
+    .error {
+        color: red;
+        margin-top: 10px;
     }
 </style>
 </head>
 <body>
 
-<!-- Navbar -->
-<div class="navbar">
-    <div class="logo" onclick="window.location.href='/'">
-        <img src="logo.png" alt="Distribuidora Logo">
-        <h1>Distribuidora de Bebidas</h1>
-    </div>
-    <div class="actions">
-            <img src="profile.png" alt="Profile Picture" style="border-radius: 50%; block-size: 40px; inline-size: 40px; margin-inline-end: 10px;">
-            <button onclick="window.location.href='login'">Entrar</button>
-        <button class="sacola" onclick="window.location.href='sacola'">
-            SACOLA
-            <div class="item-count">0</div>
-        </button>
-    </div>
-</div>
-
-<!-- Título -->
-<h1>Cervejas</h1>
-
-<!-- Slider de Produtos -->
 <div class="container">
-    <div class="slider" onwheel="handleWheel(event)">
-        <div class="produto">
-            <img src="/Garrafa_de_Cerveja_Brahma_Chope_300ML_PNG_Transparente_Sem_Fundo.png" alt="Produto 1">
-            <h2>Brahma 300ml</h2>
-            <p>Garrafa de Cerveja Brahma Chope 300ML.</p>
-            <button>Adicionar à sacola</button>
-        </div>
-        <div class="produto">
-            <img src="produto2.png" alt="Produto 2">
-            <h2>Produto 2</h2>
-            <p>Descrição do Produto 2.</p>
-            <button>Adicionar à sacola</button>
-        </div>
-        <div class="produto">
-            <img src="produto3.png" alt="Produto 3">
-            <h2>Produto 3</h2>
-            <p>Descrição do Produto 3.</p>
-            <button>Adicionar à sacola</button>
-        </div>
-        <div class="produto">
-            <img src="produto4.png" alt="Produto 4">
-            <h2>Produto 4</h2>
-            <p>Descrição do Produto 4.</p>
-            <button>Adicionar à sacola</button>
-        </div>
-        <!-- Adicione mais produtos conforme necessário -->
+    <h2>Insira seu e-mail para entrar ou se cadastrar.</h2>
+    <input type="email" id="email" placeholder="E-mail">
+    <button onclick="login()">Entrar</button>
+    <button class="admin-login" onclick="adminLogin()">Login como Admin</button>
+    <div id="error-message" class="error"></div>
+
+    <!-- Formulário de Cadastro -->
+    <div id="register-form" style="display:none;">
+        <h2>Cadastro</h2>
+        <input type="text" id="nome" placeholder="Nome">
+        <input type="text" id="endereco" placeholder="Endereço">
+        <input type="text" id="telefone" placeholder="Telefone">
+        <button onclick="register()">Cadastrar</button>
     </div>
 </div>
 
 <script>
-    function handleWheel(event) {
-        const delta = Math.sign(event.deltaY);
-        const slider = document.querySelector('.slider');
-        const larguraProduto = document.querySelector('.produto').offsetWidth + 20; // Largura do produto + margin-right
+    function validateEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    }
 
-        if (delta > 0) {
-            // Scroll down
-            slider.scrollBy({
-                left: larguraProduto,
-                behavior: 'smooth'
-            });
-        } else {
-            // Scroll up
-            slider.scrollBy({
-                left: -larguraProduto,
-                behavior: 'smooth'
-            });
+    async function login() {
+        const email = document.getElementById('email').value;
+        const errorMessage = document.getElementById('error-message');
+
+        if (!validateEmail(email)) {
+            errorMessage.textContent = "Eita, esse e-mail não parece correto.";
+            return;
         }
+
+        const response = await fetch('/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert("Bem-vindo de volta! Você está logado.");
+            window.location.href = '/'; // Redirecionar para a página inicial
+        } else {
+            if (confirm("E-mail não encontrado. Deseja criar um novo cadastro?")) {
+                document.getElementById('register-form').style.display = 'block';
+            } else {
+                errorMessage.textContent = "E-mail não encontrado.";
+            }
+        }
+    }
+
+    async function register() {
+        const email = document.getElementById('email').value;
+        const nome = document.getElementById('nome').value;
+        const endereco = document.getElementById('endereco').value;
+        const telefone = document.getElementById('telefone').value;
+
+        const response = await fetch('/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, nome, endereco, telefone })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert("Cadastro criado com sucesso! Você está logado.");
+            window.location.href = '/'; // Redirecionar para a página inicial
+        } else {
+            alert("Erro ao criar cadastro.");
+        }
+    }
+
+    function adminLogin() {
+        // Redirecionar para a página de login de administrador
+        window.location.href = 'admin-login';
     }
 </script>
 
