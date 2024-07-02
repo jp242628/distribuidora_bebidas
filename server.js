@@ -2,6 +2,7 @@ const express = require('express');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
 const path = require('path');
+const session = require('express-session'); // Adicionado
 const app = express();
 const port = 3000;
 
@@ -30,6 +31,13 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public'))); // Middleware para servir arquivos estáticos
+
+// Middleware de sessão
+app.use(session({
+    secret: 'your-secret-key',
+    resave: false,
+    saveUninitialized: true
+}));
 
 // Rota para adicionar um produto
 app.post('/addProduct', (req, res) => {
@@ -91,6 +99,7 @@ app.post('/login', (req, res) => {
         }
 
         if (results.length > 0) {
+            req.session.user = results[0]; // Armazena o usuário na sessão
             res.json({ success: true, user: results[0] }); // Retorna sucesso e dados do cliente
         } else {
             res.json({ success: false, message: 'E-mail não encontrado.' });
@@ -108,21 +117,31 @@ app.post('/register', (req, res) => {
             return res.status(500).json({ success: false, message: 'Erro no servidor' });
         }
 
+        req.session.user = { Nome: nome, Email: email, Endereco: endereco, Telefone: telefone }; // Armazena o usuário na sessão
         res.json({ success: true, user: { Nome: nome, Email: email, Endereco: endereco, Telefone: telefone } }); // Retorna sucesso e dados do cliente
     });
 });
 
-// Rota para renderizar a página de welcome
+// Rota para renderizar a página inicial
 app.get('/', (req, res) => {
-    const user = req.query.user ? JSON.parse(req.query.user) : null;
+    const user = req.session.user || null;
     res.render('index', { user });
 });
 
+// Rota para adicionar item à sacola
+app.post('/addToCart', (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).json({ message: 'Você precisa estar logado para adicionar itens à sacola.' });
+    }
+
+    const { productId } = req.body;
+    // Lógica para adicionar o item à sacola do usuário
+    // Exemplo simples:
+    res.json({ message: 'Item adicionado à sacola com sucesso.' });
+});
 
 // Função para verificar formato de e-mail
 function isValidEmail(email) {
-    // Implemente sua lógica de validação de e-mail aqui
-    // Exemplo básico: verificar se o e-mail contém "@" e "."
     return email.includes('@') && email.includes('.');
 }
 
@@ -150,4 +169,3 @@ app.get('/admin-panel', (req, res) => {
 app.listen(port, () => {
     console.log(`Servidor rodando em http://localhost:${port}`);
 });
-    

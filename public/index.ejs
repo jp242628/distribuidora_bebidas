@@ -114,12 +114,12 @@
     <div class="actions" id="user-actions">
         <% if (!user) { %>
             <!-- Botão de Entrar -->
-            <button onclick="window.location.href='/login'">Entrar</button>
+            <button onclick="window.location.href='/login'" style="border-radius: 50%; padding: 10px 20px;">Entrar</button>
         <% } else { %>
             <!-- Mensagem de Boas-vindas -->
             <img src="profile.png" alt="Profile Picture">
             <h2>Olá, <%= user.Nome %>!</h2>
-            <button class="sacola" onclick="window.location.href='sacola'">
+            <button class="sacola" onclick="window.location.href='sacola'" style="border-radius: 50%; padding: 10px 20px;">
                 SACOLA
                 <div class="item-count">0</div>
             </button>
@@ -132,33 +132,22 @@
 <h1>Cervejas</h1>
 
 <!-- Slider de Produtos -->
+<!-- Slider de Produtos -->
 <div class="container">
     <div class="slider" onwheel="handleWheel(event)">
         <div class="produto">
             <img src="/Garrafa_de_Cerveja_Brahma_Chope_300ML_PNG_Transparente_Sem_Fundo.png" alt="Produto 1">
             <h2>Brahma 300ml</h2>
             <p>Garrafa de Cerveja Brahma Chope 300ML.</p>
-            <button>Adicionar à sacola</button>
+            <% if (!user) { %>
+                <!-- Mostrar mensagem de login -->
+                <button onclick="redirectToLogin()" style="border-radius: 50%; padding: 10px 20px;">Adicionar à sacola</button>
+            <% } else { %>
+                <!-- Adicionar à sacola -->
+                <button onclick="addToCart(1)" style="border-radius: 50%; padding: 10px 20px;">Adicionar à sacola</button>
+            <% } %>
         </div>
-        <div class="produto">
-            <img src="produto2.png" alt="Produto 2">
-            <h2>Produto 2</h2>
-            <p>Descrição do Produto 2.</p>
-            <button>Adicionar à sacola</button>
-        </div>
-        <div class="produto">
-            <img src="produto3.png" alt="Produto 3">
-            <h2>Produto 3</h2>
-            <p>Descrição do Produto 3.</p>
-            <button>Adicionar à sacola</button>
-        </div>
-        <div class="produto">
-            <img src="produto4.png" alt="Produto 4">
-            <h2>Produto 4</h2>
-            <p>Descrição do Produto 4.</p>
-            <button>Adicionar à sacola</button>
-        </div>
-        <!-- Adicione mais produtos conforme necessário -->
+        <!-- Repetir para outros produtos -->
     </div>
 </div>
 
@@ -181,6 +170,16 @@
                 behavior: 'smooth'
             });
         }
+    }
+
+    function redirectToLogin() {
+        alert('Você precisa estar logado para adicionar itens à sacola');
+        window.location.href = '/login'; // Redirecionar para a página de login
+    }
+
+    function addToCart(productId) {
+        alert('Item adicionado à sacola');
+        // Aqui você pode adicionar lógica para adicionar o item à sacola do usuário
     }
 </script>
 
