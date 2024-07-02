@@ -220,7 +220,6 @@ app.post('/excluirConta', (req, res) => {
     });
 });
 
-
 // Rota para listar os pedidos do cliente
 app.get('/listarPedidos', (req, res) => {
     const clienteID = req.session.user && req.session.user.ID; // Recupera o ID do cliente da sessão
@@ -240,8 +239,6 @@ app.get('/listarPedidos', (req, res) => {
         res.json(results);
     });
 });
-
-
 
 app.listen(port, () => {
     console.log(`Servidor rodando em http://localhost:${port}`);
