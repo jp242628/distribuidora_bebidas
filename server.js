@@ -149,11 +149,6 @@ app.post('/admin-login', (req, res) => {
     }
 });
 
-// Rota para renderizar o painel do administrador
-app.get('/admin-panel', (req, res) => {
-    res.send('<h1>Painel do Administrador</h1>');
-});
-
 // Rota para renderizar a página de conta do cliente
 app.get('/conta-do-cliente', (req, res) => {
     const user = req.session.user || null;
@@ -238,6 +233,35 @@ app.get('/listarPedidos', (req, res) => {
 
         res.json(results);
     });
+});
+
+// Rotas para renderizar as páginas de gerenciamento
+app.get('/admin-panel', (req, res) => {
+    res.render('admin-panel');
+});
+
+app.get('/gerenClientes', (req, res) => {
+    res.render('gerenClientes');
+});
+
+app.get('/gerenFornecedores', (req, res) => {
+    res.render('gerenFornecedores');
+});
+
+app.get('/gerenProdutos', (req, res) => {
+    res.render('gerenProdutos');
+});
+
+app.get('/gerenPedidos', (req, res) => {
+    res.render('gerenPedidos');
+});
+
+app.get('/gerenItensPedido', (req, res) => {
+    res.render('gerenItensPedido');
+});
+
+app.get('/gerenEstoque', (req, res) => {
+    res.render('gerenEstoque');
 });
 
 app.listen(port, () => {

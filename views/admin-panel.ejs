@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Admin - Distribuidora de Bebidas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #333;
+            color: #fff;
+        }
+        .navbar .logo {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .navbar .logo img {
+            width: 50px;
+            margin-right: 10px;
+        }
+        .navbar .logo h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .navbar .actions {
+            display: flex;
+            align-items: center;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            text-align: center;
+            inline-size: 300px;
+            margin: 50px auto;
+        }
+        button {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-block-start: 10px;
+            display: block;
+            inline-size: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<div class="navbar">
+    <div class="logo" onclick="window.location.href='/'">
+        <img src="logo.png" alt="Distribuidora Logo">
+        <h1>Distribuidora de Bebidas</h1>
+    </div>
+    <div class="actions" id="user-actions">
+    </div>
+</div>
+
+<div class="container">
+    <h2>Painel Admin</h2>
+    <button onclick="window.location.href='/gerenClientes'">Gerenciar Clientes</button>
+    <button onclick="window.location.href='/gerenFornecedores'">Gerenciar Fornecedores</button>
+    <button onclick="window.location.href='/gerenProdutos'">Gerenciar Produtos</button>
+    <button onclick="window.location.href='/gerenPedidos'">Gerenciar Pedidos</button>
+    <button onclick="window.location.href='/gerenItensPedido'">Gerenciar Itens de Pedido</button>
+    <button onclick="window.location.href='/gerenEstoque'">Gerenciar Estoque</button>
+</div>
+
+</body>
+</html>
