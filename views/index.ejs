@@ -101,6 +101,73 @@
         text-align: center;
         margin-block-start: 20px;
     }
+    .sacola-dropdown {
+    position: relative;
+    }
+
+    .sacola-content {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background-color: white;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+        padding: 10px;
+        width: 300px;
+        display: none;
+    }
+
+    .sacola-content h3 {
+        margin: 0 0 10px 0;
+    }
+
+    .sacola-content #cart-items {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .sacola-content #cart-total {
+        margin: 10px 0;
+        font-weight: bold;
+    }
+
+    .sacola-content button {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        padding: 10px;
+        width: 100%;
+        cursor: pointer;
+    }
+
+    .sacola-content button:hover {
+        background-color: #45a049;
+    }
+    .sacola {
+    background-color: #fff;
+    color: #333;
+    border: 1px solid #ccc;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 8px; /* Cantos arredondados */
+}
+
+    .sacola:hover {
+        background-color: #f0f0f0;
+    }
+
+    .item-count {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background-color: red;
+        color: white;
+        border-radius: 50%;
+        padding: 2px 5px;
+        font-size: 12px;
+    }
+
+        
 </style>
 </head>
 <body>
@@ -122,13 +189,23 @@
                 <h2>Olá, <%= user.Nome %>!</h2>
             </a>
             <!-- Botão da Sacola -->
-            <button class="sacola" onclick="window.location.href='sacola'" style="border-radius: 50%; padding: 10px 20px;">
-                SACOLA
-                <div class="item-count">0</div>
-            </button>
+            <div class="sacola-dropdown">
+                <button class="sacola" onclick="toggleSacolaDropdown()">
+                    SACOLA
+                    <div class="item-count">0</div>
+                </button>
+                <div class="sacola-content" style="display: none;">
+                    <h3>Sua Sacola</h3>
+                    <div id="cart-items"></div>
+                    <div id="cart-total">Total: R$ 0.00</div>
+                    <button onclick="finalizeOrder()">Finalizar Pedido</button>
+                </div>
+            </div>
         <% } %>
     </div>
 </div>
+
+
 
 <!-- Título -->
 <h1>Cervejas</h1>
@@ -192,6 +269,82 @@
         alert('Item adicionado à sacola');
         // Aqui você pode adicionar lógica para adicionar o item à sacola do usuário
     }
+
+    let cart = [];
+let totalPrice = 0;
+
+function toggleSacolaDropdown() {
+    const sacolaContent = document.querySelector('.sacola-content');
+    sacolaContent.style.display = sacolaContent.style.display === 'none' ? 'block' : 'none';
+}
+
+function addToCart(productId) {
+    fetch(`/getProduto/${productId}`)
+        .then(response => response.json())
+        .then(product => {
+            const existingItem = cart.find(item => item.ID === product.ID);
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                product.quantity = 1;
+                cart.push(product);
+            }
+            updateCart();
+            alert('Item adicionado à sacola');
+        })
+        .catch(error => console.error('Erro:', error));
+}
+
+function updateCart() {
+    const cartItems = document.getElementById('cart-items');
+    cartItems.innerHTML = '';
+
+    totalPrice = 0;
+    cart.forEach(item => {
+        const itemTotal = item.Preco * item.quantity;
+        totalPrice += itemTotal;
+
+        const cartItem = document.createElement('div');
+        cartItem.classList.add('cart-item');
+        cartItem.innerHTML = `
+            <img src="${item.imageURL}" alt="${item.Nome}" width="50" height="50">
+            <span>${item.Nome} - R$ ${item.Preco.toFixed(2)}</span>
+            <input type="number" min="1" value="${item.quantity}" onchange="updateQuantity(${item.ID}, this.value)">
+            <span>Total: R$ ${itemTotal.toFixed(2)}</span>
+        `;
+        cartItems.appendChild(cartItem);
+    });
+
+    document.querySelector('.item-count').textContent = cart.length;
+    document.getElementById('cart-total').textContent = `Total: R$ ${totalPrice.toFixed(2)}`;
+}
+
+function updateQuantity(productId, quantity) {
+    const item = cart.find(item => item.ID === productId);
+    item.quantity = parseInt(quantity, 10);
+    updateCart();
+}
+
+function finalizeOrder() {
+    if (confirm('Tem certeza que deseja finalizar o pedido?')) {
+        fetch('/finalizarPedido', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ cart })
+        })
+        .then(response => response.json())
+        .then(result => {
+            alert(result.message);
+            if (result.success) {
+                cart = [];
+                updateCart();
+                toggleSacolaDropdown();
+            }
+        })
+        .catch(error => console.error('Erro:', error));
+    }
+}
+
 </script>
 
 </body>
