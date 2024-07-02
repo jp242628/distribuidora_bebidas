@@ -264,6 +264,76 @@ app.get('/gerenEstoque', (req, res) => {
     res.render('gerenEstoque');
 });
 
+// Rota para adicionar um fornecedor
+app.post('/addSupplier', (req, res) => {
+    const { Nome, Contato, Telefone, Email } = req.body;
+    const insertQuery = 'INSERT INTO Fornecedores (Nome, Contato, Telefone, Email) VALUES (?, ?, ?, ?)';
+    db.query(insertQuery, [Nome, Contato, Telefone, Email], (err, result) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        res.send('Fornecedor adicionado com sucesso.');
+    });
+});
+
+// Rota para remover um fornecedor
+app.post('/removeSupplier', (req, res) => {
+    const { ID } = req.body;
+    const updateQuery = 'UPDATE Produtos SET FornecedorID = NULL WHERE FornecedorID = ?';
+    db.query(updateQuery, [ID], (err, result) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        const deleteQuery = 'DELETE FROM Fornecedores WHERE ID = ?';
+        db.query(deleteQuery, [ID], (err, result) => {
+            if (err) {
+                return res.status(500).send(err);
+            }
+            res.send('Fornecedor removido com sucesso.');
+        });
+    });
+});
+
+// Rota para listar todos os fornecedores
+app.get('/listSuppliers', (req, res) => {
+    const query = 'SELECT * FROM Fornecedores';
+    db.query(query, (err, results) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        res.json(results);
+    });
+});
+
+// Rota para buscar os dados de um fornecedor pelo ID
+app.get('/getSupplier/:ID', (req, res) => {
+    const { ID } = req.params;
+    const query = 'SELECT * FROM Fornecedores WHERE ID = ?';
+    db.query(query, [ID], (err, results) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        if (results.length === 0) {
+            return res.status(404).send('Fornecedor não encontrado.');
+        }
+        res.json(results[0]);
+    });
+});
+
+// Rota para atualizar os dados de um fornecedor
+app.post('/updateSupplier/:ID', (req, res) => {
+    const { ID } = req.params;
+    const { Nome, Contato, Telefone, Email } = req.body;
+    const query = 'UPDATE Fornecedores SET Nome = ?, Contato = ?, Telefone = ?, Email = ? WHERE ID = ?';
+    db.query(query, [Nome, Contato, Telefone, Email, ID], (err, result) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        res.send('Fornecedor atualizado com sucesso.');
+    });
+});
+
+// Iniciar o servidor
 app.listen(port, () => {
     console.log(`Servidor rodando em http://localhost:${port}`);
 });

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciamento de Produtos</title>
+    <title>Gerenciamento de Fornecedores</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -22,12 +22,12 @@
         }
         label {
             display: block;
-            margin-block-end: 10px;
+            margin-bottom: 10px;
         }
         input[type="text"], input[type="number"] {
-            inline-size: 100%;
+            width: 100%;
             padding: 10px;
-            margin-block-end: 20px;
+            margin-bottom: 20px;
             border-radius: 5px;
             border: 1px solid #ccc;
         }
@@ -43,7 +43,7 @@
             background-color: #45a049;
         }
         table {
-            inline-size: 100%;
+            width: 100%;
             border-collapse: collapse;
             margin: 20px 0;
         }
@@ -52,7 +52,7 @@
         }
         th, td {
             padding: 10px;
-            text-align: start;
+            text-align: left;
         }
         th {
             background-color: #f2f2f2;
@@ -61,52 +61,69 @@
 </head>
 <body>
     
-    <h1>Gerenciamento de Produtos</h1>
+    <h1>Gerenciamento de Fornecedores</h1>
 
-    <h2>Lista de Produtos</h2>
-    <table id="productsTable">
+    <h2>Lista de Fornecedores</h2>
+    <table id="suppliersTable">
         <thead>
             <tr>
                 <th>ID</th>
                 <th>Nome</th>
-                <th>Descrição</th>
-                <th>Preço</th>
-                <th>Fornecedor ID</th>
+                <th>Contato</th>
+                <th>Telefone</th>
+                <th>Email</th>
             </tr>
         </thead>
         <tbody>
-            <!-- Os produtos serão inseridos aqui -->
+            <!-- Os fornecedores serão inseridos aqui -->
         </tbody>
     </table>
 
-    <h2>Adicionar Produto</h2>
-    <form id="addProductForm">
-        <label for="ID">ID do Produto:</label><br>
-        <input type="number" id="ID" name="ID"><br>
-        <label for="Nome">Nome:</label><br>
-        <input type="text" id="Nome" name="Nome"><br>
-        <label for="Descricao">Descrição:</label><br>
-        <input type="text" id="Descricao" name="Descricao"><br>
-        <label for="Preco">Preço:</label><br>
-        <input type="number" step="0.01" id="Preco" name="Preco"><br>
-        <label for="FornecedorID">Fornecedor ID:</label><br>
-        <input type="number" id="FornecedorID" name="FornecedorID"><br><br>
-        <input type="submit" value="Adicionar Produto">
+    <h2>Adicionar Fornecedor</h2>
+    <form id="addSupplierForm">
+        <label for="Nome">Nome:</label>
+        <input type="text" id="Nome" name="Nome">
+        <label for="Contato">Contato:</label>
+        <input type="text" id="Contato" name="Contato">
+        <label for="Telefone">Telefone:</label>
+        <input type="text" id="Telefone" name="Telefone">
+        <label for="Email">Email:</label>
+        <input type="text" id="Email" name="Email">
+        <input type="submit" value="Adicionar Fornecedor">
     </form>
 
-    <h2>Remover Produto</h2>
-    <form id="removeProductForm">
-        <label for="ID">ID do Produto:</label><br>
-        <input type="number" id="ID" name="ID"><br><br>
-        <input type="submit" value="Remover Produto">
+    <h2>Remover Fornecedor</h2>
+    <form id="removeSupplierForm">
+        <label for="ID">ID do Fornecedor:</label>
+        <input type="number" id="ID" name="ID">
+        <input type="submit" value="Remover Fornecedor">
+    </form>
+
+    <h2>Atualizar Fornecedor</h2>
+    <form id="fetchSupplierForm">
+        <label for="updateID">ID do Fornecedor:</label>
+        <input type="number" id="updateID" name="updateID">
+        <input type="submit" value="Buscar Fornecedor">
+    </form>
+
+    <form id="updateSupplierForm" style="display:none;">
+        <label for="updateNome">Nome:</label>
+        <input type="text" id="updateNome" name="Nome">
+        <label for="updateContato">Contato:</label>
+        <input type="text" id="updateContato" name="Contato">
+        <label for="updateTelefone">Telefone:</label>
+        <input type="text" id="updateTelefone" name="Telefone">
+        <label for="updateEmail">Email:</label>
+        <input type="text" id="updateEmail" name="Email">
+        <input type="submit" value="Atualizar Fornecedor">
     </form>
 
     <script>
-        document.getElementById('addProductForm').addEventListener('submit', function (event) {
+        document.getElementById('addSupplierForm').addEventListener('submit', function (event) {
             event.preventDefault();
             const formData = new FormData(event.target);
             const data = Object.fromEntries(formData.entries());
-            fetch('/addProduct', {
+            fetch('/addSupplier', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -114,16 +131,16 @@
             .then(response => response.text())
             .then(data => {
                 alert(data);
-                loadProducts();
+                loadSuppliers();
             })
             .catch(error => console.error('Erro:', error));
         });
 
-        document.getElementById('removeProductForm').addEventListener('submit', function (event) {
+        document.getElementById('removeSupplierForm').addEventListener('submit', function (event) {
             event.preventDefault();
             const formData = new FormData(event.target);
             const data = Object.fromEntries(formData.entries());
-            fetch('/removeProduct', {
+            fetch('/removeSupplier', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -131,34 +148,68 @@
             .then(response => response.text())
             .then(data => {
                 alert(data);
-                loadProducts();
+                loadSuppliers();
             })
             .catch(error => console.error('Erro:', error));
         });
 
-        function loadProducts() {
-            fetch('/listProducts')
+        document.getElementById('fetchSupplierForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const supplierID = document.getElementById('updateID').value;
+            fetch(`/getSupplier/${supplierID}`)
                 .then(response => response.json())
-                .then(products => {
-                    const productsTableBody = document.querySelector('#productsTable tbody');
-                    productsTableBody.innerHTML = '';
-                    products.forEach(product => {
+                .then(supplier => {
+                    document.getElementById('updateNome').value = supplier.Nome;
+                    document.getElementById('updateContato').value = supplier.Contato;
+                    document.getElementById('updateTelefone').value = supplier.Telefone;
+                    document.getElementById('updateEmail').value = supplier.Email;
+                    document.getElementById('updateSupplierForm').style.display = 'block';
+                })
+                .catch(error => console.error('Erro:', error));
+        });
+
+        document.getElementById('updateSupplierForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+            const supplierID = document.getElementById('updateID').value;
+            fetch(`/updateSupplier/${supplierID}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+                loadSuppliers();
+                document.getElementById('updateSupplierForm').style.display = 'none';
+            })
+            .catch(error => console.error('Erro:', error));
+        });
+
+        function loadSuppliers() {
+            fetch('/listSuppliers')
+                .then(response => response.json())
+                .then(suppliers => {
+                    const suppliersTableBody = document.querySelector('#suppliersTable tbody');
+                    suppliersTableBody.innerHTML = '';
+                    suppliers.forEach(supplier => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
-                            <td>${product.ID}</td>
-                            <td>${product.Nome}</td>
-                            <td>${product.Descricao}</td>
-                            <td>${product.Preco}</td>
-                            <td>${product.FornecedorID}</td>
+                            <td>${supplier.ID}</td>
+                            <td>${supplier.Nome}</td>
+                            <td>${supplier.Contato}</td>
+                            <td>${supplier.Telefone}</td>
+                            <td>${supplier.Email}</td>
                         `;
-                        productsTableBody.appendChild(row);
+                        suppliersTableBody.appendChild(row);
                     });
                 })
                 .catch(error => console.error('Erro:', error));
         }
 
-        // Carregar os produtos ao carregar a página
-        document.addEventListener('DOMContentLoaded', loadProducts);
+        // Carregar os fornecedores ao carregar a página
+        document.addEventListener('DOMContentLoaded', loadSuppliers);
     </script>
 </body>
 </html>
