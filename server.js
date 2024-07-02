@@ -160,6 +160,89 @@ app.get('/conta-do-cliente', (req, res) => {
     res.render('conta-do-cliente', { user });
 });
 
+// Rota para atualizar informações do cliente
+app.post('/atualizarCliente', (req, res) => {
+    const { ID, Nome, Endereco, Telefone, Email } = req.body;
+    const sql = 'UPDATE Clientes SET Nome = ?, Endereco = ?, Telefone = ?, Email = ? WHERE ID = ?';
+    const values = [Nome, Endereco, Telefone, Email, ID];
+
+    db.query(sql, values, (err, result) => {
+        if (err) {
+            console.error('Erro ao atualizar o cliente:', err);
+            res.json({ message: 'Erro ao atualizar o cliente.', type: 'error' });
+            return;
+        }
+
+        if (result.affectedRows === 0) {
+            res.json({ message: 'Nenhuma linha foi atualizada. Verifique o ID do cliente.', type: 'error' });
+        } else {
+            res.json({ message: 'Informações do cliente atualizadas com sucesso.', type: 'success' });
+        }
+    });
+});
+
+// Rota para logout do cliente
+app.post('/logout', (req, res) => {
+    req.session.destroy(err => {
+        if (err) {
+            console.error('Erro ao fazer logout:', err);
+            res.status(500).json({ message: 'Erro ao fazer logout', type: 'error' });
+            return;
+        }
+        res.json({ message: 'Logout realizado com sucesso', type: 'success' });
+    });
+});
+
+// Rota para excluir a conta do cliente
+app.post('/excluirConta', (req, res) => {
+    const { ID } = req.body;
+
+    // Atualizar os pedidos para definir ClienteID como null
+    const updatePedidosSql = 'UPDATE Pedidos SET ClienteID = NULL WHERE ClienteID = ?';
+    db.query(updatePedidosSql, [ID], (err, updateResult) => {
+        if (err) {
+            console.error('Erro ao atualizar pedidos:', err);
+            res.status(500).json({ message: 'Erro ao atualizar pedidos', type: 'error' });
+            return;
+        }
+
+        // Excluir o cliente da tabela Clientes
+        const deleteClientSql = 'DELETE FROM Clientes WHERE ID = ?';
+        db.query(deleteClientSql, [ID], (err, deleteResult) => {
+            if (err) {
+                console.error('Erro ao excluir a conta do cliente:', err);
+                res.status(500).json({ message: 'Erro ao excluir a conta do cliente', type: 'error' });
+                return;
+            }
+
+            res.json({ message: 'Conta do cliente excluída com sucesso', type: 'success' });
+        });
+    });
+});
+
+
+// Rota para listar os pedidos do cliente
+app.get('/listarPedidos', (req, res) => {
+    const clienteID = req.session.user && req.session.user.ID; // Recupera o ID do cliente da sessão
+    if (!clienteID) {
+        res.status(400).json({ message: 'Cliente não está logado ou ID do cliente não encontrado na sessão.', type: 'error' });
+        return;
+    }
+
+    const sql = 'SELECT * FROM Pedidos WHERE ClienteID = ?';
+    db.query(sql, [clienteID], (err, results) => {
+        if (err) {
+            console.error('Erro ao listar os pedidos:', err);
+            res.status(500).send('Erro ao listar os pedidos');
+            return;
+        }
+
+        res.json(results);
+    });
+});
+
+
+
 app.listen(port, () => {
     console.log(`Servidor rodando em http://localhost:${port}`);
 });

@@ -4,24 +4,258 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Conta do Cliente</title>
-    <!-- Adicione estilos CSS, se necessário -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        form {
+            background-color: #fff;
+            margin: 20px;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        label {
+            display: block;
+            margin-block-end: 10px;
+        }
+
+        input[type="text"], input[type="number"], input[type="email"] {
+            inline-size: 100%;
+            padding: 10px;
+            margin-block-end: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        table {
+            inline-size: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: start;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .message {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .message.success {
+            background-color: #dff0d8;
+            color: #3c763d;
+            border: 1px solid #d6e9c6;
+        }
+
+        .message.error {
+            background-color: #f2dede;
+            color: #a94442;
+            border: 1px solid #ebccd1;
+        }
+
+        .message.info {
+            background-color: #d9edf7;
+            color: #31708f;
+            border: 1px solid #bce8f1;
+        }
+
+        input[type="email"] {
+            inline-size: 100%;
+            padding: 10px;
+            margin-block-end: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+    </style>
 </head>
 <body>
+    <div class="userInfo">
+        <h1>Conta do Cliente</h1>
+        <% if (user) { %>
+            <p>Bem-vindo(a), <%= user.Nome %>!</p>
+        <% } else { %>
+            <p>Você precisa estar logado para acessar esta página.</p>
+            <a href="/login">Faça login</a>
+        <% } %>
+    </div>
 
-<!-- Exibindo as informações do usuário -->
-<div>
-    <h1>Conta do Cliente</h1>
-    <% if (user) { %>
-        <p>Bem-vindo(a), <%= user.Nome %>!</p>
-        <!-- Aqui você pode exibir mais informações do usuário, como email, endereço, etc. -->
-    <% } else { %>
-        <p>Você precisa estar logado para acessar esta página.</p>
-        <!-- Adicione um link para a página de login, se desejar -->
-        <a href="/login">Faça login</a>
-    <% } %>
-</div>
+    <h2>Informações do Cliente</h2>
+    <div id="message" class="message" style="display: none;"></div>
+    <form id="updateForm" action="/atualizarCliente" method="POST">
+        <label for="ID">ID:</label><br>
+        <input type="text" id="ID" name="ID" value="<%= user.ID %>" readonly><br>
+        <label for="Nome">Nome:</label><br>
+        <input type="text" id="Nome" name="Nome" value="<%= user.Nome %>"><br>
+        <label for="Endereco">Endereço:</label><br>
+        <input type="text" id="Endereco" name="Endereco" value="<%= user.Endereco %>"><br>
+        <label for="Telefone">Telefone:</label><br>
+        <input type="text" id="Telefone" name="Telefone" value="<%= user.Telefone %>"><br>
+        <label for="Email">Email:</label><br>
+        <input type="email" id="Email" name="Email" value="<%= user.Email %>"><br><br>
+        <input type="submit" value="Atualizar Informações">
+    </form>
 
-<!-- Adicione mais conteúdo conforme necessário -->
+    <h2>Pedidos do Cliente</h2>
+    <table id="pedidosTable">
+        <thead>
+            <tr>
+                <th>ID do Pedido</th>
+                <th>Data do Pedido</th>
+                <th>Status do Pedido</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Os pedidos serão inseridos aqui -->
+        </tbody>
+    </table>
 
+    <!-- Botões de Sair e Excluir Conta -->
+    <form id="accountActionsForm">
+        <input type="submit" id="logoutButton" value="Sair da Conta" style="background-color: #007BFF; margin-inline-end: 10px;">
+        <input type="submit" id="deleteAccountButton" value="Excluir Conta" style="background-color: #f44336;">
+    </form>
+
+    <script>
+        document.getElementById('updateForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+
+            fetch('/atualizarCliente', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                const messageDiv = document.getElementById('message');
+                messageDiv.textContent = result.message;
+                messageDiv.className = `message ${result.type}`;
+                messageDiv.style.display = 'block';
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                }, 3000);
+            })
+            .catch(error => console.error('Erro:', error));
+        });
+
+        document.getElementById('accountActionsForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const targetId = event.submitter.id;
+
+            if (targetId === 'logoutButton') {
+                fetch('/logout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                .then(response => response.json())
+                .then(result => {
+                    const messageDiv = document.getElementById('message');
+                    messageDiv.textContent = result.message;
+                    messageDiv.className = `message ${result.type}`;
+                    messageDiv.style.display = 'block';
+
+                    if (result.type === 'success') {
+                        setTimeout(() => {
+                            window.location.href = '/'; // Redirecionar para a página de login após logout
+                        }, 3000);
+                    } else {
+                        setTimeout(() => {
+                            messageDiv.style.display = 'none';
+                        }, 3000);
+                    }
+                })
+                .catch(error => console.error('Erro:', error));
+            } else if (targetId === 'deleteAccountButton') {
+                if (confirm('Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita.')) {
+                    const ID = document.getElementById('ID').value;
+
+                    fetch('/excluirConta', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ ID })
+                    })
+                    .then(response => response.json())
+                    .then(result => {
+                        const messageDiv = document.getElementById('message');
+                        messageDiv.textContent = result.message;
+                        messageDiv.className = `message ${result.type}`;
+                        messageDiv.style.display = 'block';
+
+                        if (result.type === 'success') {
+                            setTimeout(() => {
+                                window.location.href = '/'; // Redirecionar para a página inicial após exclusão
+                            }, 3000);
+                        } else {
+                            setTimeout(() => {
+                                messageDiv.style.display = 'none';
+                            }, 3000);
+                        }
+                    })
+                    .catch(error => console.error('Erro:', error));
+                }
+            }
+        });
+
+        function loadPedidos() {
+            fetch('/listarPedidos')
+                .then(response => response.json())
+                .then(pedidos => {
+                    const pedidosTableBody = document.querySelector('#pedidosTable tbody');
+                    pedidosTableBody.innerHTML = '';
+                    pedidos.forEach(pedido => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${pedido.ID}</td>
+                            <td>${pedido.DataPedido}</td>
+                            <td>${pedido.StatusPedido}</td>
+                        `;
+                        pedidosTableBody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Erro:', error));
+        }
+
+        document.addEventListener('DOMContentLoaded', loadPedidos);
+    </script>
 </body>
 </html>
