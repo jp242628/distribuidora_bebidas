@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conta do Cliente</title>
+    <!-- Adicione estilos CSS, se necessário -->
+</head>
+<body>
+
+<!-- Exibindo as informações do usuário -->
+<div>
+    <h1>Conta do Cliente</h1>
+    <% if (user) { %>
+        <p>Bem-vindo(a), <%= user.Nome %>!</p>
+        <!-- Aqui você pode exibir mais informações do usuário, como email, endereço, etc. -->
+    <% } else { %>
+        <p>Você precisa estar logado para acessar esta página.</p>
+        <!-- Adicione um link para a página de login, se desejar -->
+        <a href="/login">Faça login</a>
+    <% } %>
+</div>
+
+<!-- Adicione mais conteúdo conforme necessário -->
+
+</body>
+</html>

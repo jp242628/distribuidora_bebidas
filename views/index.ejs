@@ -116,9 +116,12 @@
             <!-- Botão de Entrar -->
             <button onclick="window.location.href='/login'" style="border-radius: 50%; padding: 10px 20px;">Entrar</button>
         <% } else { %>
-            <!-- Mensagem de Boas-vindas -->
-            <img src="profile.png" alt="Profile Picture">
-            <h2>Olá, <%= user.Nome %>!</h2>
+            <!-- Link para Conta do Cliente -->
+            <a href="/conta-do-cliente">
+                <img src="profile.png" alt="Profile Picture">
+                <h2>Olá, <%= user.Nome %>!</h2>
+            </a>
+            <!-- Botão da Sacola -->
             <button class="sacola" onclick="window.location.href='sacola'" style="border-radius: 50%; padding: 10px 20px;">
                 SACOLA
                 <div class="item-count">0</div>
@@ -126,7 +129,6 @@
         <% } %>
     </div>
 </div>
-
 
 <!-- Título -->
 <h1>Cervejas</h1>

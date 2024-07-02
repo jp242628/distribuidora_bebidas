@@ -128,18 +128,6 @@ app.get('/', (req, res) => {
     res.render('index', { user });
 });
 
-// Rota para adicionar item à sacola
-app.post('/addToCart', (req, res) => {
-    if (!req.session.user) {
-        return res.status(401).json({ message: 'Você precisa estar logado para adicionar itens à sacola.' });
-    }
-
-    const { productId } = req.body;
-    // Lógica para adicionar o item à sacola do usuário
-    // Exemplo simples:
-    res.json({ message: 'Item adicionado à sacola com sucesso.' });
-});
-
 // Função para verificar formato de e-mail
 function isValidEmail(email) {
     return email.includes('@') && email.includes('.');
@@ -164,6 +152,12 @@ app.post('/admin-login', (req, res) => {
 // Rota para renderizar o painel do administrador
 app.get('/admin-panel', (req, res) => {
     res.send('<h1>Painel do Administrador</h1>');
+});
+
+// Rota para renderizar a página de conta do cliente
+app.get('/conta-do-cliente', (req, res) => {
+    const user = req.session.user || null;
+    res.render('conta-do-cliente', { user });
 });
 
 app.listen(port, () => {

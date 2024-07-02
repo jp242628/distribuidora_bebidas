@@ -1,0 +1,44 @@
+<!-- conta-do-cliente.ejs -->
+
+<h1>Minha Conta</h1>
+
+<!-- Informações do Cliente -->
+<h2>Informações do Cliente:</h2>
+<p>Nome: <%= cliente.Nome %></p>
+<p>Endereço: <%= cliente.Endereco %></p>
+<p>Telefone: <%= cliente.Telefone %></p>
+<p>Email: <%= cliente.Email %></p>
+
+<!-- Lista de Pedidos do Cliente -->
+<h2>Meus Pedidos:</h2>
+<ul>
+    <% pedidos.forEach(pedido => { %>
+        <li>
+            ID do Pedido: <%= pedido.ID %><br>
+            Data do Pedido: <%= pedido.DataPedido %><br>
+            Status do Pedido: <%= pedido.StatusPedido %><br>
+        </li>
+    <% }); %>
+</ul>
+
+<!-- Formulário para atualizar informações do cliente -->
+<form action="/atualizar-cliente" method="POST">
+    <label for="nome">Nome:</label>
+    <input type="text" id="nome" name="nome" value="<%= cliente.Nome %>" required><br>
+    
+    <label for="endereco">Endereço:</label>
+    <input type="text" id="endereco" name="endereco" value="<%= cliente.Endereco %>"><br>
+    
+    <label for="telefone">Telefone:</label>
+    <input type="text" id="telefone" name="telefone" value="<%= cliente.Telefone %>"><br>
+    
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" value="<%= cliente.Email %>" required><br>
+    
+    <button type="submit">Atualizar Informações</button>
+</form>
+
+<!-- Formulário para excluir conta do cliente -->
+<form action="/excluir-conta" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita.');">
+    <button type="submit">Excluir Conta</button>
+</form>
