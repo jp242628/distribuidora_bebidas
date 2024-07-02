@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciamento de Produtos</title>
+    <title>Gerenciamento de Pedidos</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -22,12 +22,12 @@
         }
         label {
             display: block;
-            margin-block-end: 10px;
+            margin-bottom: 10px;
         }
-        input[type="text"], input[type="number"] {
-            inline-size: 100%;
+        input[type="text"], input[type="number"], input[type="date"] {
+            width: 100%;
             padding: 10px;
-            margin-block-end: 20px;
+            margin-bottom: 20px;
             border-radius: 5px;
             border: 1px solid #ccc;
         }
@@ -43,7 +43,7 @@
             background-color: #45a049;
         }
         table {
-            inline-size: 100%;
+            width: 100%;
             border-collapse: collapse;
             margin: 20px 0;
         }
@@ -52,7 +52,7 @@
         }
         th, td {
             padding: 10px;
-            text-align: start;
+            text-align: left;
         }
         th {
             background-color: #f2f2f2;
@@ -61,52 +61,87 @@
 </head>
 <body>
     
-    <h1>Gerenciamento de Produtos</h1>
+    <h1>Gerenciamento de Pedidos</h1>
 
-    <h2>Lista de Produtos</h2>
-    <table id="productsTable">
+    <h2>Lista de Pedidos</h2>
+    <table id="ordersTable">
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Nome</th>
-                <th>Descrição</th>
-                <th>Preço</th>
-                <th>Fornecedor ID</th>
+                <th>ClienteID</th>
+                <th>Data do Pedido</th>
+                <th>Status do Pedido</th>
             </tr>
         </thead>
         <tbody>
-            <!-- Os produtos serão inseridos aqui -->
+            <!-- Os pedidos serão inseridos aqui -->
         </tbody>
     </table>
 
-    <h2>Adicionar Produto</h2>
-    <form id="addProductForm">
-        <label for="ID">ID do Produto:</label><br>
-        <input type="number" id="ID" name="ID"><br>
-        <label for="Nome">Nome:</label><br>
-        <input type="text" id="Nome" name="Nome"><br>
-        <label for="Descricao">Descrição:</label><br>
-        <input type="text" id="Descricao" name="Descricao"><br>
-        <label for="Preco">Preço:</label><br>
-        <input type="number" step="0.01" id="Preco" name="Preco"><br>
-        <label for="FornecedorID">Fornecedor ID:</label><br>
-        <input type="number" id="FornecedorID" name="FornecedorID"><br><br>
-        <input type="submit" value="Adicionar Produto">
+    <h2>Adicionar Pedido</h2>
+    <form id="addOrderForm">
+        <label for="ClienteID">ID do Cliente:</label>
+        <input type="number" id="ClienteID" name="ClienteID">
+        <label for="DataPedido">Data do Pedido:</label>
+        <input type="date" id="DataPedido" name="DataPedido">
+        <label for="StatusPedido">Status do Pedido:</label>
+        <input type="text" id="StatusPedido" name="StatusPedido">
+        <input type="submit" value="Adicionar Pedido">
     </form>
 
-    <h2>Remover Produto</h2>
-    <form id="removeProductForm">
-        <label for="ID">ID do Produto:</label><br>
-        <input type="number" id="ID" name="ID"><br><br>
-        <input type="submit" value="Remover Produto">
+    <h2>Remover Pedido</h2>
+    <form id="removeOrderForm">
+        <label for="ID">ID do Pedido:</label>
+        <input type="number" id="ID" name="ID">
+        <input type="submit" value="Remover Pedido">
     </form>
+
+    <h2>Atualizar Pedido</h2>
+    <form id="fetchOrderForm">
+        <label for="updateID">ID do Pedido:</label>
+        <input type="number" id="updateID" name="updateID">
+        <input type="submit" value="Buscar Pedido">
+    </form>
+
+    <form id="updateOrderForm" style="display:none;">
+        <label for="updateClienteID">ID do Cliente:</label>
+        <input type="number" id="updateClienteID" name="ClienteID">
+        <label for="updateDataPedido">Data do Pedido:</label>
+        <input type="date" id="updateDataPedido" name="DataPedido">
+        <label for="updateStatusPedido">Status do Pedido:</label>
+        <input type="text" id="updateStatusPedido" name="StatusPedido">
+        <input type="submit" value="Atualizar Pedido">
+    </form>
+
+    <h2>Buscar Itens do Pedido por ID</h2>
+    <form id="fetchOrderItemsForm">
+        <label for="searchPedidoID">ID do Pedido:</label>
+        <input type="number" id="searchPedidoID" name="searchPedidoID">
+        <input type="submit" value="Buscar Itens">
+    </form>
+
+    <h2>Lista de Itens do Pedido</h2>
+    <table id="orderItemsTable" style="display:none;">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>PedidoID</th>
+                <th>ProdutoID</th>
+                <th>Quantidade</th>
+                <th>PrecoUnitario</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Os itens do pedido serão inseridos aqui -->
+        </tbody>
+    </table>
 
     <script>
-        document.getElementById('addProductForm').addEventListener('submit', function (event) {
+        document.getElementById('addOrderForm').addEventListener('submit', function (event) {
             event.preventDefault();
             const formData = new FormData(event.target);
             const data = Object.fromEntries(formData.entries());
-            fetch('/addProduct', {
+            fetch('/addOrder', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -114,16 +149,16 @@
             .then(response => response.text())
             .then(data => {
                 alert(data);
-                loadProducts();
+                loadOrders();
             })
             .catch(error => console.error('Erro:', error));
         });
 
-        document.getElementById('removeProductForm').addEventListener('submit', function (event) {
+        document.getElementById('removeOrderForm').addEventListener('submit', function (event) {
             event.preventDefault();
             const formData = new FormData(event.target);
             const data = Object.fromEntries(formData.entries());
-            fetch('/removeProduct', {
+            fetch('/removeOrder', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -131,34 +166,89 @@
             .then(response => response.text())
             .then(data => {
                 alert(data);
-                loadProducts();
+                loadOrders();
             })
             .catch(error => console.error('Erro:', error));
         });
 
-        function loadProducts() {
-            fetch('/listProducts')
+        document.getElementById('fetchOrderForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const orderID = document.getElementById('updateID').value;
+            fetch(`/getOrder/${orderID}`)
                 .then(response => response.json())
-                .then(products => {
-                    const productsTableBody = document.querySelector('#productsTable tbody');
-                    productsTableBody.innerHTML = '';
-                    products.forEach(product => {
+                .then(order => {
+                    document.getElementById('updateClienteID').value = order.ClienteID;
+                    document.getElementById('updateDataPedido').value = order.DataPedido;
+                    document.getElementById('updateStatusPedido').value = order.StatusPedido;
+                    document.getElementById('updateOrderForm').style.display = 'block';
+                })
+                .catch(error => console.error('Erro:', error));
+        });
+
+        document.getElementById('updateOrderForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+            const orderID = document.getElementById('updateID').value;
+            fetch(`/updateOrder/${orderID}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+                loadOrders();
+                document.getElementById('updateOrderForm').style.display = 'none';
+            })
+            .catch(error => console.error('Erro:', error));
+        });
+
+        document.getElementById('fetchOrderItemsForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const pedidoID = document.getElementById('searchPedidoID').value;
+            fetch(`/getOrderItems/${pedidoID}`)
+                .then(response => response.json())
+                .then(orderItems => {
+                    const orderItemsTableBody = document.querySelector('#orderItemsTable tbody');
+                    orderItemsTableBody.innerHTML = '';
+                    orderItems.forEach(orderItem => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
-                            <td>${product.ID}</td>
-                            <td>${product.Nome}</td>
-                            <td>${product.Descricao}</td>
-                            <td>${product.Preco}</td>
-                            <td>${product.FornecedorID}</td>
+                            <td>${orderItem.ID}</td>
+                            <td>${orderItem.PedidoID}</td>
+                            <td>${orderItem.ProdutoID}</td>
+                            <td>${orderItem.Quantidade}</td>
+                            <td>${orderItem.PrecoUnitario}</td>
                         `;
-                        productsTableBody.appendChild(row);
+                        orderItemsTableBody.appendChild(row);
+                    });
+                    document.getElementById('orderItemsTable').style.display = 'block';
+                })
+                .catch(error => console.error('Erro:', error));
+        });
+
+        function loadOrders() {
+            fetch('/listOrders')
+                .then(response => response.json())
+                .then(orders => {
+                    const ordersTableBody = document.querySelector('#ordersTable tbody');
+                    ordersTableBody.innerHTML = '';
+                    orders.forEach(order => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${order.ID}</td>
+                            <td>${order.ClienteID}</td>
+                            <td>${order.DataPedido}</td>
+                            <td>${order.StatusPedido}</td>
+                        `;
+                        ordersTableBody.appendChild(row);
                     });
                 })
                 .catch(error => console.error('Erro:', error));
         }
 
-        // Carregar os produtos ao carregar a página
-        document.addEventListener('DOMContentLoaded', loadProducts);
+        document.addEventListener('DOMContentLoaded', loadOrders);
     </script>
 </body>
 </html>

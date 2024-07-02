@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciamento de Produtos</title>
+    <title>Gerenciamento de Clientes</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -61,52 +61,78 @@
 </head>
 <body>
     
-    <h1>Gerenciamento de Produtos</h1>
+    <h1>Gerenciamento de Clientes</h1>
 
-    <h2>Lista de Produtos</h2>
-    <table id="productsTable">
+    <h2>Lista de Clientes</h2>
+    <table id="clientsTable">
         <thead>
             <tr>
                 <th>ID</th>
                 <th>Nome</th>
-                <th>Descrição</th>
-                <th>Preço</th>
-                <th>Fornecedor ID</th>
+                <th>Endereço</th>
+                <th>Telefone</th>
+                <th>Email</th>
             </tr>
         </thead>
         <tbody>
-            <!-- Os produtos serão inseridos aqui -->
+            <!-- Os clientes serão inseridos aqui -->
         </tbody>
     </table>
 
-    <h2>Adicionar Produto</h2>
-    <form id="addProductForm">
-        <label for="ID">ID do Produto:</label><br>
-        <input type="number" id="ID" name="ID"><br>
-        <label for="Nome">Nome:</label><br>
-        <input type="text" id="Nome" name="Nome"><br>
-        <label for="Descricao">Descrição:</label><br>
-        <input type="text" id="Descricao" name="Descricao"><br>
-        <label for="Preco">Preço:</label><br>
-        <input type="number" step="0.01" id="Preco" name="Preco"><br>
-        <label for="FornecedorID">Fornecedor ID:</label><br>
-        <input type="number" id="FornecedorID" name="FornecedorID"><br><br>
-        <input type="submit" value="Adicionar Produto">
+    <h2>Remover Cliente</h2>
+    <form id="removeClientForm">
+        <label for="ID">ID do Cliente:</label>
+        <input type="number" id="ID" name="ID">
+        <input type="submit" value="Remover Cliente">
     </form>
 
-    <h2>Remover Produto</h2>
-    <form id="removeProductForm">
-        <label for="ID">ID do Produto:</label><br>
-        <input type="number" id="ID" name="ID"><br><br>
-        <input type="submit" value="Remover Produto">
+    <h2>Atualizar Cliente</h2>
+    <form id="fetchClientForm">
+        <label for="updateID">ID do Cliente:</label>
+        <input type="number" id="updateID" name="updateID">
+        <input type="submit" value="Buscar Cliente">
     </form>
+
+    <form id="updateClientForm" style="display:none;">
+        <label for="updateNome">Nome:</label>
+        <input type="text" id="updateNome" name="Nome">
+        <label for="updateEndereco">Endereço:</label>
+        <input type="text" id="updateEndereco" name="Endereco">
+        <label for="updateTelefone">Telefone:</label>
+        <input type="text" id="updateTelefone" name="Telefone">
+        <label for="updateEmail">Email:</label>
+        <input type="text" id="updateEmail" name="Email">
+        <input type="submit" value="Atualizar Cliente">
+    </form>
+
+    <h2>Buscar Pedidos por Cliente ID</h2>
+    <form id="fetchOrdersForm">
+        <label for="searchClienteID">ID do Cliente:</label>
+        <input type="number" id="searchClienteID" name="searchClienteID">
+        <input type="submit" value="Buscar Pedidos">
+    </form>
+
+    <h2>Lista de Pedidos do Cliente</h2>
+    <table id="ordersTable" style="display:none;">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>ClienteID</th>
+                <th>Data do Pedido</th>
+                <th>Status do Pedido</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Os pedidos serão inseridos aqui -->
+        </tbody>
+    </table>
 
     <script>
-        document.getElementById('addProductForm').addEventListener('submit', function (event) {
+        document.getElementById('removeClientForm').addEventListener('submit', function (event) {
             event.preventDefault();
             const formData = new FormData(event.target);
             const data = Object.fromEntries(formData.entries());
-            fetch('/addProduct', {
+            fetch('/removeClient', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -114,51 +140,91 @@
             .then(response => response.text())
             .then(data => {
                 alert(data);
-                loadProducts();
+                loadClients();
             })
             .catch(error => console.error('Erro:', error));
         });
 
-        document.getElementById('removeProductForm').addEventListener('submit', function (event) {
+        document.getElementById('fetchClientForm').addEventListener('submit', function (event) {
             event.preventDefault();
-            const formData = new FormData(event.target);
-            const data = Object.fromEntries(formData.entries());
-            fetch('/removeProduct', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.text())
-            .then(data => {
-                alert(data);
-                loadProducts();
-            })
-            .catch(error => console.error('Erro:', error));
-        });
-
-        function loadProducts() {
-            fetch('/listProducts')
+            const clientID = document.getElementById('updateID').value;
+            fetch(`/getClient/${clientID}`)
                 .then(response => response.json())
-                .then(products => {
-                    const productsTableBody = document.querySelector('#productsTable tbody');
-                    productsTableBody.innerHTML = '';
-                    products.forEach(product => {
+                .then(client => {
+                    document.getElementById('updateNome').value = client.Nome;
+                    document.getElementById('updateEndereco').value = client.Endereco;
+                    document.getElementById('updateTelefone').value = client.Telefone;
+                    document.getElementById('updateEmail').value = client.Email;
+                    document.getElementById('updateClientForm').style.display = 'block';
+                })
+                .catch(error => console.error('Erro:', error));
+        });
+
+        document.getElementById('updateClientForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+            const clientID = document.getElementById('updateID').value;
+            fetch(`/updateClient/${clientID}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+                loadClients();
+                document.getElementById('updateClientForm').style.display = 'none';
+            })
+            .catch(error => console.error('Erro:', error));
+        });
+
+        document.getElementById('fetchOrdersForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const clienteID = document.getElementById('searchClienteID').value;
+            fetch(`/getOrders/${clienteID}`)
+                .then(response => response.json())
+                .then(orders => {
+                    const ordersTableBody = document.querySelector('#ordersTable tbody');
+                    ordersTableBody.innerHTML = '';
+                    orders.forEach(order => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
-                            <td>${product.ID}</td>
-                            <td>${product.Nome}</td>
-                            <td>${product.Descricao}</td>
-                            <td>${product.Preco}</td>
-                            <td>${product.FornecedorID}</td>
+                            <td>${order.ID}</td>
+                            <td>${order.ClienteID}</td>
+                            <td>${order.DataPedido}</td>
+                            <td>${order.StatusPedido}</td>
                         `;
-                        productsTableBody.appendChild(row);
+                        ordersTableBody.appendChild(row);
+                    });
+                    document.getElementById('ordersTable').style.display = 'block';
+                })
+                .catch(error => console.error('Erro:', error));
+        });
+
+        function loadClients() {
+            fetch('/listClients')
+                .then(response => response.json())
+                .then(clients => {
+                    const clientsTableBody = document.querySelector('#clientsTable tbody');
+                    clientsTableBody.innerHTML = '';
+                    clients.forEach(client => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${client.ID}</td>
+                            <td>${client.Nome}</td>
+                            <td>${client.Endereco}</td>
+                            <td>${client.Telefone}</td>
+                            <td>${client.Email}</td>
+                        `;
+                        clientsTableBody.appendChild(row);
                     });
                 })
                 .catch(error => console.error('Erro:', error));
         }
 
-        // Carregar os produtos ao carregar a página
-        document.addEventListener('DOMContentLoaded', loadProducts);
+        // Carregar os clientes ao carregar a página
+        document.addEventListener('DOMContentLoaded', loadClients);
     </script>
 </body>
 </html>

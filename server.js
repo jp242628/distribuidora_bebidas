@@ -333,6 +333,167 @@ app.post('/updateSupplier/:ID', (req, res) => {
     });
 });
 
+// Rota para listar todos os clientes
+app.get('/listClients', (req, res) => {
+    const query = 'SELECT * FROM Clientes';
+    db.query(query, (err, results) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        res.json(results);
+    });
+});
+
+// Rota para remover um cliente
+app.post('/removeClient', (req, res) => {
+    const { ID } = req.body;
+    const updateOrdersQuery = 'UPDATE Pedidos SET ClienteID = NULL WHERE ClienteID = ?';
+    const deleteClientQuery = 'DELETE FROM Clientes WHERE ID = ?';
+    
+    db.query(updateOrdersQuery, [ID], (err, result) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        db.query(deleteClientQuery, [ID], (err, result) => {
+            if (err) {
+                return res.status(500).send(err);
+            }
+            res.send('Cliente removido com sucesso.');
+        });
+    });
+});
+
+// Rota para buscar um cliente pelo ID
+app.get('/getClient/:id', (req, res) => {
+    const clientID = req.params.id;
+    const query = 'SELECT * FROM Clientes WHERE ID = ?';
+    db.query(query, [clientID], (err, result) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        if (result.length === 0) {
+            return res.status(404).send('Cliente não encontrado.');
+        }
+        res.json(result[0]);
+    });
+});
+
+// Rota para atualizar um cliente
+app.post('/updateClient/:id', (req, res) => {
+    const clientID = req.params.id;
+    const { Nome, Endereco, Telefone, Email } = req.body;
+    const query = 'UPDATE Clientes SET Nome = ?, Endereco = ?, Telefone = ?, Email = ? WHERE ID = ?';
+    db.query(query, [Nome, Endereco, Telefone, Email, clientID], (err, result) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        res.send('Cliente atualizado com sucesso.');
+    });
+});
+
+// Rota para buscar pedidos por Cliente ID
+app.get('/getOrders/:clienteID', (req, res) => {
+    const clienteID = req.params.clienteID;
+    const query = 'SELECT * FROM Pedidos WHERE ClienteID = ?';
+    db.query(query, [clienteID], (err, results) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        res.json(results);
+    });
+});
+
+// Rota para adicionar um pedido
+app.post('/addOrder', (req, res) => {
+    const { ClienteID, DataPedido, StatusPedido } = req.body;
+    const checkClientQuery = 'SELECT * FROM Clientes WHERE ID = ?';
+    db.query(checkClientQuery, [ClienteID], (err, results) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        if (results.length === 0) {
+            return res.status(400).send('ClienteID não encontrado.');
+        }
+        const insertQuery = 'INSERT INTO Pedidos (ClienteID, DataPedido, StatusPedido) VALUES (?, ?, ?)';
+        db.query(insertQuery, [ClienteID, DataPedido, StatusPedido], (err, result) => {
+            if (err) {
+                return res.status(500).send(err);
+            }
+            res.send('Pedido adicionado com sucesso.');
+        });
+    });
+});
+
+// Rota para remover um pedido
+app.post('/removeOrder', (req, res) => {
+    const { ID } = req.body;
+    const deleteOrderItemsQuery = 'DELETE FROM ItensPedido WHERE PedidoID = ?';
+    const deleteOrderQuery = 'DELETE FROM Pedidos WHERE ID = ?';
+
+    db.query(deleteOrderItemsQuery, [ID], (err, result) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        db.query(deleteOrderQuery, [ID], (err, result) => {
+            if (err) {
+                return res.status(500).send(err);
+            }
+            res.send('Pedido removido com sucesso.');
+        });
+    });
+});
+
+// Rota para listar todos os pedidos
+app.get('/listOrders', (req, res) => {
+    const query = 'SELECT * FROM Pedidos';
+    db.query(query, (err, results) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        res.json(results);
+    });
+});
+
+// Rota para buscar um pedido pelo ID
+app.get('/getOrder/:id', (req, res) => {
+    const orderID = req.params.id;
+    const query = 'SELECT * FROM Pedidos WHERE ID = ?';
+    db.query(query, [orderID], (err, result) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        if (result.length === 0) {
+            return res.status(404).send('Pedido não encontrado.');
+        }
+        res.json(result[0]);
+    });
+});
+
+// Rota para atualizar um pedido
+app.post('/updateOrder/:id', (req, res) => {
+    const orderID = req.params.id;
+    const { ClienteID, DataPedido, StatusPedido } = req.body;
+    const query = 'UPDATE Pedidos SET ClienteID = ?, DataPedido = ?, StatusPedido = ? WHERE ID = ?';
+    db.query(query, [ClienteID, DataPedido, StatusPedido, orderID], (err, result) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        res.send('Pedido atualizado com sucesso.');
+    });
+});
+
+// Rota para buscar itens do pedido por PedidoID
+app.get('/getOrderItems/:pedidoID', (req, res) => {
+    const pedidoID = req.params.pedidoID;
+    const query = 'SELECT * FROM ItensPedido WHERE PedidoID = ?';
+    db.query(query, [pedidoID], (err, results) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        res.json(results);
+    });
+});
+
 // Iniciar o servidor
 app.listen(port, () => {
     console.log(`Servidor rodando em http://localhost:${port}`);
