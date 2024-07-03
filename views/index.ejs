@@ -221,6 +221,82 @@
     </div>
 </div>
 
+<!-- Título BEATS E ICE -->
+<h1>Beats e Ice</h1>
+<!-- Slider de Produtos -->
+<div class="container">
+    <div class="slider" onwheel="handleWheel(event)">
+        <div class="produto">
+            <img src="Beats_Senses_1L.png" alt="Produto 2">
+            <h2>Beats Senses 1L</h2>
+            <p>1 Litro De Skol Beats.</p>
+            <% if (!user) { %>
+                <button onclick="redirectToLogin()" class="adicionar-sacola">Adicionar à sacola</button>
+            <% } else { %>
+                <button onclick="addToCart(1)" class="adicionar-sacola">Adicionar à sacola</button>
+            <% } %>
+        </div>
+        <!-- Repetir para outros produtos -->
+    </div>
+</div>
+
+<!-- Título Vinhos -->
+<h1>Vinhos</h1>
+<!-- Slider de Produtos -->
+<div class="container">
+    <div class="slider" onwheel="handleWheel(event)">
+        <div class="produto">
+            <img src="Vinho_Tinto_Malbec_Novecento_750ml.png" alt="Produto 3">
+            <h2>Vinho Tinto Malbec Novecento 750ml</h2>
+            <p>Vinho Tinto Bodega Dante Robino Novecento Malbec Garrafa 750ml.</p>
+            <% if (!user) { %>
+                <button onclick="redirectToLogin()" class="adicionar-sacola">Adicionar à sacola</button>
+            <% } else { %>
+                <button onclick="addToCart(2)" class="adicionar-sacola">Adicionar à sacola</button>
+            <% } %>
+        </div>
+        <!-- Repetir para outros produtos -->
+    </div>
+</div>
+
+<!-- Título Destilados -->
+<h1>Destilados</h1>
+<!-- Slider de Produtos -->
+<div class="container">
+    <div class="slider" onwheel="handleWheel(event)">
+        <div class="produto">
+            <img src="Whisky_Red_Label_PNG_Transparente_Sem_Fundo.png" alt="Produto 4">
+            <h2>Whisky Johnnie Walker Red Label 1L</h2>
+            <p>Whisky Red Label 1L Johnnie Walker Original.</p>
+            <% if (!user) { %>
+                <button onclick="redirectToLogin()" class="adicionar-sacola">Adicionar à sacola</button>
+            <% } else { %>
+                <button onclick="addToCart(3)" class="adicionar-sacola">Adicionar à sacola</button>
+            <% } %>
+        </div>
+        <!-- Repetir para outros produtos -->
+    </div>
+</div>
+
+<!-- Título Águas e Gelo -->
+<h1>Águas e Gelo</h1>
+<!-- Slider de Produtos -->
+<div class="container">
+    <div class="slider" onwheel="handleWheel(event)">
+        <div class="produto">
+            <img src="Sacola_Embalada_Com_Gelo.png" alt="Produto 1">
+            <h2>Sacola Embalada Com Gelo</h2>
+            <p>Sacola Embalada Com Gelo Para Entrega (Gelo Impróprio Para Consumo).</p>
+            <% if (!user) { %>
+                <button onclick="redirectToLogin()" class="adicionar-sacola">Adicionar à sacola</button>
+            <% } else { %>
+                <button onclick="addToCart(4)" class="adicionar-sacola">Adicionar à sacola</button>
+            <% } %>
+        </div>
+        <!-- Repetir para outros produtos -->
+    </div>
+</div>
+
 <style>
     .adicionar-sacola {
         background-color: #333;
