@@ -10,7 +10,7 @@ const port = 3000;
 const dbConfig = {
     host: 'localhost',
     user: 'root',
-    password: '12',
+    password: 'admin',
     database: 'Distribuidora_Bebidas'
 };
 
@@ -619,7 +619,7 @@ app.get('/getProduct/:produtoID', (req, res) => {
         if (result.length === 0) {
             return res.status(404).send('Produto não encontrado.');
         }
-        res.json(result[0]);
+        res.json(result[0]); // Retorna apenas o objeto em si
     });
 });
 
