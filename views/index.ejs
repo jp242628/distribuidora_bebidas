@@ -284,7 +284,7 @@
 <div class="container">
     <div class="slider" onwheel="handleWheel(event)">
         <div class="produto">
-            <img src="Sacola_Embalada_Com_Gelo.png" alt="Produto 1">
+            <img src="Sacola_Embalada_Com_Gelo.png" alt="Produto 5">
             <h2>Sacola Embalada Com Gelo</h2>
             <p>Sacola Embalada Com Gelo Para Entrega (Gelo Impróprio Para Consumo).</p>
             <% if (!user) { %>
@@ -293,7 +293,56 @@
                 <button onclick="addToCart(93)" class="adicionar-sacola">Adicionar à sacola</button>
             <% } %>
         </div>
-        <!-- Repetir para outros produtos -->
+        <div class="produto">
+            <img src="agua.png" alt="Produto 6">
+            <h2>Água Mineral 500ml</h2>
+            <p>Água mineral natural, embalagem de 500ml.</p>
+            <% if (!user) { %>
+                <button onclick="redirectToLogin()" class="adicionar-sacola">Adicionar à sacola</button>
+            <% } else { %>
+                <button onclick="addToCart(94)" class="adicionar-sacola">Adicionar à sacola</button>
+            <% } %>
+        </div>
+        <div class="produto">
+            <img src="agua.png" alt="Produto 7">
+            <h2>Água com Gás 1L</h2>
+            <p>Água mineral com gás, garrafa de 1 litro.</p>
+            <% if (!user) { %>
+                <button onclick="redirectToLogin()" class="adicionar-sacola">Adicionar à sacola</button>
+            <% } else { %>
+                <button onclick="addToCart(95)" class="adicionar-sacola">Adicionar à sacola</button>
+            <% } %>
+        </div>
+        <div class="produto">
+            <img src="agua.png" alt="Produto 8">
+            <h2>Gelo em Cubos 5kg</h2>
+            <p>Gelo em cubos, pacote de 5kg.</p>
+            <% if (!user) { %>
+                <button onclick="redirectToLogin()" class="adicionar-sacola">Adicionar à sacola</button>
+            <% } else { %>
+                <button onclick="addToCart(96)" class="adicionar-sacola">Adicionar à sacola</button>
+            <% } %>
+        </div>
+        <div class="produto">
+            <img src="agua.png" alt="Produto 9">
+            <h2>Água de Coco 200ml</h2>
+            <p>Água de coco natural, embalagem de 200ml.</p>
+            <% if (!user) { %>
+                <button onclick="redirectToLogin()" class="adicionar-sacola">Adicionar à sacola</button>
+            <% } else { %>
+                <button onclick="addToCart(97)" class="adicionar-sacola">Adicionar à sacola</button>
+            <% } %>
+        </div>
+        <div class="produto">
+            <img src="agua.png" alt="Produto 10">
+            <h2>Gelo Seco 1kg</h2>
+            <p>Gelo seco, pacote de 1kg.</p>
+            <% if (!user) { %>
+                <button onclick="redirectToLogin()" class="adicionar-sacola">Adicionar à sacola</button>
+            <% } else { %>
+                <button onclick="addToCart(98)" class="adicionar-sacola">Adicionar à sacola</button>
+            <% } %>
+        </div>
     </div>
 </div>
 
@@ -309,24 +358,13 @@
 </style>
 
 <script>
+    
+    // Função para lidar com o scroll da roda do mouse
     function handleWheel(event) {
-        const delta = Math.sign(event.deltaY);
-        const slider = document.querySelector('.slider');
-        const larguraProduto = document.querySelector('.produto').offsetWidth + 20; // Largura do produto + margin-right
-
-        if (delta > 0) {
-            // Scroll down
-            slider.scrollBy({
-                left: larguraProduto,
-                behavior: 'smooth'
-            });
-        } else {
-            // Scroll up
-            slider.scrollBy({
-                left: -larguraProduto,
-                behavior: 'smooth'
-            });
-        }
+        event.preventDefault();
+        const container = event.currentTarget;
+        const scrollDistance = event.deltaY;
+        container.scrollLeft += scrollDistance;
     }
 
     function redirectToLogin() {
