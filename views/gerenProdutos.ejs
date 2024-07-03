@@ -94,6 +94,24 @@
         <input type="submit" value="Adicionar Produto">
     </form>
 
+    <h2>Atualizar Produto</h2>
+    <form id="fetchProductForm">
+        <label for="updateID">ID do Produto:</label><br>
+        <input type="number" id="updateID" name="ID"><br><br>
+        <input type="submit" value="Buscar Produto">
+    </form>
+    <form id="updateProductForm" style="display:none;">
+        <label for="updateNome">Nome:</label><br>
+        <input type="text" id="updateNome" name="Nome"><br>
+        <label for="updateDescricao">Descrição:</label><br>
+        <input type="text" id="updateDescricao" name="Descricao"><br>
+        <label for="updatePreco">Preço:</label><br>
+        <input type="number" step="0.01" id="updatePreco" name="Preco"><br>
+        <label for="updateFornecedorID">Fornecedor ID:</label><br>
+        <input type="number" id="updateFornecedorID" name="FornecedorID"><br><br>
+        <input type="submit" value="Atualizar Produto">
+    </form>
+
     <h2>Remover Produto</h2>
     <form id="removeProductForm">
         <label for="ID">ID do Produto:</label><br>
@@ -124,6 +142,46 @@
             const formData = new FormData(event.target);
             const data = Object.fromEntries(formData.entries());
             fetch('/removeProduct', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+                loadProducts();
+            })
+            .catch(error => console.error('Erro:', error));
+        });
+
+        document.getElementById('fetchProductForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const productID = formData.get('ID');
+            fetch(`/getProduct/${productID}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        const product = data[0];
+                        document.getElementById('updateProductForm').style.display = 'block';
+                        document.getElementById('updateNome').value = product.Nome;
+                        document.getElementById('updateDescricao').value = product.Descricao;
+                        document.getElementById('updatePreco').value = product.Preco;
+                        document.getElementById('updateFornecedorID').value = product.FornecedorID;
+                    } else {
+                        alert('Produto não encontrado');
+                    }
+                })
+                .catch(error => console.error('Erro:', error));
+        });
+
+        document.getElementById('updateProductForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+            const productID = document.getElementById('updateID').value;
+            data.ID = productID;
+            fetch('/updateProduct', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)

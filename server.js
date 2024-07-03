@@ -83,6 +83,39 @@ app.get('/listProducts', (req, res) => {
     });
 });
 
+// Rota para buscar um produto pelo ID
+app.get('/getProduct/:ID', (req, res) => {
+    const productID = req.params.ID;
+    const query = 'SELECT * FROM Produtos WHERE ID = ?';
+    db.query(query, [productID], (err, results) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        res.json(results);
+    });
+});
+
+// Rota para atualizar um produto
+app.post('/updateProduct', (req, res) => {
+    const { ID, Nome, Descricao, Preco, FornecedorID } = req.body;
+    const checkQuery = 'SELECT * FROM Fornecedores WHERE ID = ?';
+    db.query(checkQuery, [FornecedorID], (err, results) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        if (results.length === 0) {
+            return res.status(400).send('FornecedorID não encontrado.');
+        }
+        const updateQuery = 'UPDATE Produtos SET Nome = ?, Descricao = ?, Preco = ?, FornecedorID = ? WHERE ID = ?';
+        db.query(updateQuery, [Nome, Descricao, Preco, FornecedorID, ID], (err, result) => {
+            if (err) {
+                return res.status(500).send(err);
+            }
+            res.send('Produto atualizado com sucesso.');
+        });
+    });
+});
+
 // Rota para renderizar a página de login
 app.get('/login', (req, res) => {
     res.render('login');
