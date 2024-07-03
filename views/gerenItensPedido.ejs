@@ -222,19 +222,28 @@
         }
 
         function fetchProductDetails(produtoID) {
-            fetch(`/getProduct/${produtoID}`)
-                .then(response => response.json())
-                .then(product => {
-                    const productDetails = document.getElementById('productDetails');
-                    productDetails.innerHTML = `
-                        <p><strong>ID do Produto:</strong> ${product.ID}</p>
-                        <p><strong>Nome do Produto:</strong> ${product.Nome}</p>
-                        <p><strong>Descrição:</strong> ${product.Descricao}</p>
-                        <p><strong>Preço:</strong> ${product.Preco}</p>
-                    `;
-                })
-                .catch(error => console.error('Erro:', error));
-        }
+    fetch(`/getProduct/${produtoID}`)
+        .then(response => response.json())
+        .then(product => {
+            // Verifica se product não é um array vazio
+            if (Array.isArray(product)) {
+                product = product[0];
+            }
+            const productDetails = document.getElementById('productDetails');
+            if (product && product.ID && product.Nome && product.Descricao && product.Preco) {
+                productDetails.innerHTML = `
+                    <p><strong>ID do Produto:</strong> ${product.ID}</p>
+                    <p><strong>Nome do Produto:</strong> ${product.Nome}</p>
+                    <p><strong>Descrição:</strong> ${product.Descricao}</p>
+                    <p><strong>Preço:</strong> ${product.Preco}</p>
+                `;
+            } else {
+                productDetails.innerHTML = '<p>Detalhes do produto não encontrados.</p>';
+            }
+        })
+        .catch(error => console.error('Erro:', error));
+}
+
             document.getElementById('addOrderItemForm').addEventListener('submit', function (event) {
         event.preventDefault();
         const formData = new FormData(event.target);
