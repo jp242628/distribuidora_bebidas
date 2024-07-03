@@ -623,6 +623,18 @@ app.get('/getProduct/:produtoID', (req, res) => {
     });
 });
 
+// Rota para adicionar um novo item de pedido
+app.post('/addOrderItem', (req, res) => {
+    const { PedidoID, ProdutoID, Quantidade, PrecoUnitario } = req.body;
+    const insertQuery = 'INSERT INTO ItensPedido (PedidoID, ProdutoID, Quantidade, PrecoUnitario) VALUES (?, ?, ?, ?)';
+    db.query(insertQuery, [PedidoID, ProdutoID, Quantidade, PrecoUnitario], (err, result) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        res.send('Item de pedido adicionado com sucesso.');
+    });
+});
+
 
 // Rota para listar todos os registros de estoque
 app.get('/listStock', (req, res) => {

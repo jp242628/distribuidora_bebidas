@@ -115,6 +115,19 @@
         <!-- Detalhes do produto serão inseridos aqui -->
     </div>
 
+    <h2>Adicionar Novo Item de Pedido</h2>
+    <form id="addOrderItemForm">
+        <label for="addPedidoID">ID do Pedido:</label>
+        <input type="number" id="addPedidoID" name="PedidoID">
+        <label for="addProdutoID">ID do Produto:</label>
+        <input type="number" id="addProdutoID" name="ProdutoID">
+        <label for="addQuantidade">Quantidade:</label>
+        <input type="number" id="addQuantidade" name="Quantidade">
+        <label for="addPrecoUnitario">Preço Unitário:</label>
+        <input type="number" step="0.01" id="addPrecoUnitario" name="PrecoUnitario">
+        <input type="submit" value="Adicionar Item de Pedido">
+    </form>
+
     <script>
         document.getElementById('fetchOrderItemForm').addEventListener('submit', function (event) {
             event.preventDefault();
@@ -219,6 +232,48 @@
                         <p><strong>Descrição:</strong> ${product.Descricao}</p>
                         <p><strong>Preço:</strong> ${product.Preco}</p>
                     `;
+                })
+                .catch(error => console.error('Erro:', error));
+        }
+            document.getElementById('addOrderItemForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const data = Object.fromEntries(formData.entries());
+
+        fetch('/addOrderItem', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.text())
+        .then(data => {
+            alert(data);
+            loadOrderItems();
+            document.getElementById('addOrderItemForm').reset(); // Limpar formulário após adicionar
+        })
+        .catch(error => console.error('Erro:', error));
+    });
+
+        function loadOrderItems() {
+            fetch('/listOrderItems')
+                .then(response => response.json())
+                .then(orderItems => {
+                    const orderItemsTableBody = document.querySelector('#orderItemsTable tbody');
+                    orderItemsTableBody.innerHTML = '';
+                    orderItems.forEach(orderItem => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${orderItem.PedidoID}</td>
+                            <td>${orderItem.ProdutoID}</td>
+                            <td>${orderItem.Quantidade}</td>
+                            <td>${orderItem.PrecoUnitario}</td>
+                            <td>
+                                <button onclick="fetchOrderDetails(${orderItem.PedidoID})">Detalhes do Pedido</button>
+                                <button onclick="fetchProductDetails(${orderItem.ProdutoID})">Detalhes do Produto</button>
+                            </td>
+                        `;
+                        orderItemsTableBody.appendChild(row);
+                    });
                 })
                 .catch(error => console.error('Erro:', error));
         }
