@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciamento de Pedidos</title>
+    <title>Gerenciamento de Estoque</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -22,12 +22,12 @@
         }
         label {
             display: block;
-            margin-bottom: 10px;
+            margin-block-end: 10px;
         }
-        input[type="text"], input[type="number"], input[type="date"] {
-            width: 100%;
+        input[type="text"], input[type="number"], input[type="date"], select {
+            inline-size: 100%;
             padding: 10px;
-            margin-bottom: 20px;
+            margin-block-end: 20px;
             border-radius: 5px;
             border: 1px solid #ccc;
         }
@@ -43,7 +43,7 @@
             background-color: #45a049;
         }
         table {
-            width: 100%;
+            inline-size: 100%;
             border-collapse: collapse;
             margin: 20px 0;
         }
@@ -52,203 +52,211 @@
         }
         th, td {
             padding: 10px;
-            text-align: left;
+            text-align: start;
         }
         th {
             background-color: #f2f2f2;
+        }
+        .details {
+            margin-block-end: 20px;
         }
     </style>
 </head>
 <body>
     
-    <h1>Gerenciamento de Pedidos</h1>
+    <h1>Gerenciamento de Estoque</h1>
 
-    <h2>Lista de Pedidos</h2>
-    <table id="ordersTable">
+    <h2>Lista de Movimentações de Estoque</h2>
+    <table id="stockMovementsTable">
         <thead>
             <tr>
                 <th>ID</th>
-                <th>ClienteID</th>
-                <th>Data do Pedido</th>
-                <th>Status do Pedido</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Os pedidos serão inseridos aqui -->
-        </tbody>
-    </table>
-
-    <h2>Adicionar Pedido</h2>
-    <form id="addOrderForm">
-        <label for="ClienteID">ID do Cliente:</label>
-        <input type="number" id="ClienteID" name="ClienteID">
-        <label for="DataPedido">Data do Pedido:</label>
-        <input type="date" id="DataPedido" name="DataPedido">
-        <label for="StatusPedido">Status do Pedido:</label>
-        <input type="text" id="StatusPedido" name="StatusPedido">
-        <input type="submit" value="Adicionar Pedido">
-    </form>
-
-    <h2>Remover Pedido</h2>
-    <form id="removeOrderForm">
-        <label for="ID">ID do Pedido:</label>
-        <input type="number" id="ID" name="ID">
-        <input type="submit" value="Remover Pedido">
-    </form>
-
-    <h2>Atualizar Pedido</h2>
-    <form id="fetchOrderForm">
-        <label for="updateID">ID do Pedido:</label>
-        <input type="number" id="updateID" name="updateID">
-        <input type="submit" value="Buscar Pedido">
-    </form>
-
-    <form id="updateOrderForm" style="display:none;">
-        <label for="updateClienteID">ID do Cliente:</label>
-        <input type="number" id="updateClienteID" name="ClienteID">
-        <label for="updateDataPedido">Data do Pedido:</label>
-        <input type="date" id="updateDataPedido" name="DataPedido">
-        <label for="updateStatusPedido">Status do Pedido:</label>
-        <input type="text" id="updateStatusPedido" name="StatusPedido">
-        <input type="submit" value="Atualizar Pedido">
-    </form>
-
-    <h2>Buscar Itens do Pedido por ID</h2>
-    <form id="fetchOrderItemsForm">
-        <label for="searchPedidoID">ID do Pedido:</label>
-        <input type="number" id="searchPedidoID" name="searchPedidoID">
-        <input type="submit" value="Buscar Itens">
-    </form>
-
-    <h2>Lista de Itens do Pedido</h2>
-    <table id="orderItemsTable" style="display:none;">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>PedidoID</th>
                 <th>ProdutoID</th>
+                <th>Data de Movimentação</th>
                 <th>Quantidade</th>
-                <th>PrecoUnitario</th>
+                <th>Tipo</th>
+                <th>Descrição</th>
             </tr>
         </thead>
         <tbody>
-            <!-- Os itens do pedido serão inseridos aqui -->
+            <!-- As movimentações de estoque serão inseridas aqui -->
         </tbody>
     </table>
+
+    <h2>Adicionar Movimentação de Estoque</h2>
+    <form id="addStockMovementForm">
+        <label for="addProdutoID">ID do Produto:</label>
+        <input type="number" id="addProdutoID" name="ProdutoID" required>
+        <label for="addDataMovimentacao">Data de Movimentação:</label>
+        <input type="date" id="addDataMovimentacao" name="DataMovimentacao" required>
+        <label for="addQuantidade">Quantidade:</label>
+        <input type="number" id="addQuantidade" name="Quantidade" required>
+        <label for="addTipo">Tipo (entrada/saída):</label>
+        <select id="addTipo" name="Tipo" required>
+            <option value="entrada">Entrada</option>
+            <option value="saída">Saída</option>
+        </select>
+        <label for="addDescricao">Descrição:</label>
+        <input type="text" id="addDescricao" name="Descricao">
+        <input type="submit" value="Adicionar Movimentação">
+    </form>
+
+    <h2>Atualizar Movimentação de Estoque</h2>
+    <form id="updateStockMovementForm">
+        <label for="updateEstoqueID">ID da Movimentação:</label>
+        <input type="number" id="updateEstoqueID" name="estoqueID" required>
+        <input type="submit" value="Pesquisar">
+    </form>
+
+    <div id="updateStockMovementDetails" class="details" style="display: none;">
+        <h2>Dados da Movimentação de Estoque</h2>
+        <label for="updateProdutoID">ID do Produto:</label>
+        <input type="number" id="updateProdutoID" name="ProdutoID" required>
+        <label for="updateDataMovimentacao">Data de Movimentação:</label>
+        <input type="date" id="updateDataMovimentacao" name="DataMovimentacao" required>
+        <label for="updateQuantidade">Quantidade:</label>
+        <input type="number" id="updateQuantidade" name="Quantidade" required>
+        <label for="updateTipo">Tipo (entrada/saída):</label>
+        <select id="updateTipo" name="Tipo" required>
+            <option value="entrada">Entrada</option>
+            <option value="saída">Saída</option>
+        </select>
+        <label for="updateDescricao">Descrição:</label>
+        <input type="text" id="updateDescricao" name="Descricao">
+        <input type="submit" value="Atualizar Movimentação">
+    </div>
+
+    <h2>Remover Movimentação de Estoque</h2>
+    <form id="removeStockMovementForm">
+        <label for="removeEstoqueID">ID da Movimentação:</label>
+        <input type="number" id="removeEstoqueID" name="estoqueID" required>
+        <input type="submit" value="Remover Movimentação">
+    </form>
+
+    <h2>Pesquisar Produto por ID</h2>
+    <form id="searchProductForm">
+        <label for="searchProductID">ID do Produto:</label>
+        <input type="number" id="searchProductID" name="produtoID" required>
+        <input type="submit" value="Pesquisar">
+    </form>
+
+    <div id="productDetails" class="details">
+        <h2>Detalhes do Produto</h2>
+        <p><strong>ID do Produto:</strong> <span id="productID"></span></p>
+        <p><strong>Nome do Produto:</strong> <span id="productName"></span></p>
+        <p><strong>Descrição:</strong> <span id="productDescription"></span></p>
+        <p><strong>Preço:</strong> <span id="productPrice"></span></p>
+    </div>
 
     <script>
-        document.getElementById('addOrderForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            const formData = new FormData(event.target);
-            const data = Object.fromEntries(formData.entries());
-            fetch('/addOrder', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.text())
-            .then(data => {
-                alert(data);
-                loadOrders();
-            })
-            .catch(error => console.error('Erro:', error));
-        });
-
-        document.getElementById('removeOrderForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            const formData = new FormData(event.target);
-            const data = Object.fromEntries(formData.entries());
-            fetch('/removeOrder', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.text())
-            .then(data => {
-                alert(data);
-                loadOrders();
-            })
-            .catch(error => console.error('Erro:', error));
-        });
-
-        document.getElementById('fetchOrderForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            const orderID = document.getElementById('updateID').value;
-            fetch(`/getOrder/${orderID}`)
+        // Carregar as movimentações de estoque ao carregar a página
+        function loadStockMovements() {
+            fetch('/listStockMovements')
                 .then(response => response.json())
-                .then(order => {
-                    document.getElementById('updateClienteID').value = order.ClienteID;
-                    document.getElementById('updateDataPedido').value = order.DataPedido;
-                    document.getElementById('updateStatusPedido').value = order.StatusPedido;
-                    document.getElementById('updateOrderForm').style.display = 'block';
-                })
-                .catch(error => console.error('Erro:', error));
-        });
-
-        document.getElementById('updateOrderForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            const formData = new FormData(event.target);
-            const data = Object.fromEntries(formData.entries());
-            const orderID = document.getElementById('updateID').value;
-            fetch(`/updateOrder/${orderID}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.text())
-            .then(data => {
-                alert(data);
-                loadOrders();
-                document.getElementById('updateOrderForm').style.display = 'none';
-            })
-            .catch(error => console.error('Erro:', error));
-        });
-
-        document.getElementById('fetchOrderItemsForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            const pedidoID = document.getElementById('searchPedidoID').value;
-            fetch(`/getOrderItems/${pedidoID}`)
-                .then(response => response.json())
-                .then(orderItems => {
-                    const orderItemsTableBody = document.querySelector('#orderItemsTable tbody');
-                    orderItemsTableBody.innerHTML = '';
-                    orderItems.forEach(orderItem => {
+                .then(stockMovements => {
+                    const stockMovementsTableBody = document.querySelector('#stockMovementsTable tbody');
+                    stockMovementsTableBody.innerHTML = '';
+                    stockMovements.forEach(movement => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
-                            <td>${orderItem.ID}</td>
-                            <td>${orderItem.PedidoID}</td>
-                            <td>${orderItem.ProdutoID}</td>
-                            <td>${orderItem.Quantidade}</td>
-                            <td>${orderItem.PrecoUnitario}</td>
+                            <td>${movement.ID}</td>
+                            <td>${movement.ProdutoID}</td>
+                            <td>${new Date(movement.DataMovimentacao).toLocaleDateString('pt-BR')}</td>
+                            <td>${movement.Quantidade}</td>
+                            <td>${movement.Tipo}</td>
+                            <td>${movement.Descricao}</td>
                         `;
-                        orderItemsTableBody.appendChild(row);
-                    });
-                    document.getElementById('orderItemsTable').style.display = 'block';
-                })
-                .catch(error => console.error('Erro:', error));
-        });
-
-        function loadOrders() {
-            fetch('/listOrders')
-                .then(response => response.json())
-                .then(orders => {
-                    const ordersTableBody = document.querySelector('#ordersTable tbody');
-                    ordersTableBody.innerHTML = '';
-                    orders.forEach(order => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${order.ID}</td>
-                            <td>${order.ClienteID}</td>
-                            <td>${order.DataPedido}</td>
-                            <td>${order.StatusPedido}</td>
-                        `;
-                        ordersTableBody.appendChild(row);
+                        stockMovementsTableBody.appendChild(row);
                     });
                 })
                 .catch(error => console.error('Erro:', error));
         }
 
-        document.addEventListener('DOMContentLoaded', loadOrders);
+        // Carregar os detalhes do produto ao pesquisar por ID
+        function fetchProductDetails(produtoID) {
+            fetch(`/getProductDetails/${produtoID}`)
+                .then(response => response.json())
+                .then(product => {
+                    document.getElementById('productID').textContent = product.ID;
+                    document.getElementById('productName').textContent = product.Nome;
+                    document.getElementById('productDescription').textContent = product.Descricao;
+                    document.getElementById('productPrice').textContent = product.Preco;
+                })
+                .catch(error => console.error('Erro:', error));
+        }
+
+        // Pesquisar movimentação de estoque por ID e carregar dados para atualização
+        document.getElementById('updateStockMovementForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const estoqueID = formData.get('estoqueID');
+            
+            fetch(`/getStockMovementDetails/${estoqueID}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Movimentação de estoque não encontrada');
+                    }
+                    return response.json();
+                })
+                .then(stockMovement => {
+                    document.getElementById('updateProdutoID').value = stockMovement.ProdutoID;
+                    document.getElementById('updateDataMovimentacao').value = stockMovement.DataMovimentacao.split('T')[0]; // Formato YYYY-MM-DD
+                    document.getElementById('updateQuantidade').value = stockMovement.Quantidade;
+                    document.getElementById('updateTipo').value = stockMovement.Tipo;
+                    document.getElementById('updateDescricao').value = stockMovement.Descricao;
+                    document.getElementById('updateStockMovementDetails').style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    alert('Movimentação de estoque não encontrada');
+                });
+        });
+
+        // Atualizar movimentação de estoque
+        document.getElementById('updateStockMovementDetails').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+            const estoqueID = data.estoqueID;
+
+            fetch(`/updateStockMovement/${estoqueID}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+                loadStockMovements(); // Recarregar a tabela após a atualização
+                document.getElementById('updateStockMovementDetails').style.display = 'none'; // Ocultar o formulário após a atualização
+            })
+            .catch(error => console.error('Erro:', error));
+        });
+
+        // Remover movimentação de estoque
+        document.getElementById('removeStockMovementForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+            const estoqueID = data.estoqueID;
+
+            fetch(`/removeStockMovement/${estoqueID}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+                loadStockMovements(); // Recarregar a tabela após a remoção
+            })
+            .catch(error => console.error('Erro:', error));
+        });
+
+        // Carregar as movimentações de estoque ao carregar a página
+        document.addEventListener('DOMContentLoaded', function () {
+            loadStockMovements();
+        });
     </script>
 </body>
 </html>

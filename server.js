@@ -494,6 +494,161 @@ app.get('/getOrderItems/:pedidoID', (req, res) => {
     });
 });
 
+// Rota para listar todos os itens de pedido
+app.get('/listOrderItems', (req, res) => {
+    const query = 'SELECT * FROM ItensPedido';
+    db.query(query, (err, results) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        res.json(results);
+    });
+});
+
+// Rota para buscar um item de pedido pelo PedidoID e ProdutoID
+app.get('/getOrderItem/:pedidoID/:produtoID', (req, res) => {
+    const pedidoID = req.params.pedidoID;
+    const produtoID = req.params.produtoID;
+    const query = 'SELECT * FROM ItensPedido WHERE PedidoID = ? AND ProdutoID = ?';
+    db.query(query, [pedidoID, produtoID], (err, result) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        if (result.length === 0) {
+            return res.status(404).send('Item de pedido não encontrado.');
+        }
+        res.json(result[0]);
+    });
+});
+
+// Rota para atualizar um item de pedido pelo PedidoID e ProdutoID
+app.post('/updateOrderItem/:pedidoID/:produtoID', (req, res) => {
+    const pedidoID = req.params.pedidoID;
+    const produtoID = req.params.produtoID;
+    const { Quantidade, PrecoUnitario } = req.body;
+    const query = 'UPDATE ItensPedido SET Quantidade = ?, PrecoUnitario = ? WHERE PedidoID = ? AND ProdutoID = ?';
+    db.query(query, [Quantidade, PrecoUnitario, pedidoID, produtoID], (err, result) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        res.send('Item de pedido atualizado com sucesso.');
+    });
+});
+
+// Rota para remover um item de pedido pelo PedidoID e ProdutoID
+app.post('/removeOrderItem/:pedidoID/:produtoID', (req, res) => {
+    const pedidoID = req.params.pedidoID;
+    const produtoID = req.params.produtoID;
+    const deleteQuery = 'DELETE FROM ItensPedido WHERE PedidoID = ? AND ProdutoID = ?';
+    db.query(deleteQuery, [pedidoID, produtoID], (err, result) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        res.send('Item de pedido removido com sucesso.');
+    });
+});
+
+// Rota para obter detalhes de um produto pelo ID
+app.get('/getProduct/:produtoID', (req, res) => {
+    const produtoID = req.params.produtoID;
+    const query = 'SELECT * FROM Produtos WHERE ID = ?';
+    db.query(query, [produtoID], (err, result) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        if (result.length === 0) {
+            return res.status(404).send('Produto não encontrado.');
+        }
+        res.json(result[0]);
+    });
+});
+
+
+// Rota para listar todos os registros de estoque
+app.get('/listStock', (req, res) => {
+    const query = 'SELECT * FROM Estoque';
+    db.query(query, (err, results) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        res.json(results);
+    });
+});
+
+// Rota para buscar um produto pelo ID e retornar informações do produto e seu estoque
+app.get('/getProductStock/:produtoID', (req, res) => {
+    const produtoID = req.params.produtoID;
+    const query = `
+        SELECT p.ID, p.Nome, p.Descricao, p.Preco, e.ID AS EstoqueID, e.DataMovimentacao, e.Quantidade, e.Tipo, e.Descricao AS DescricaoEstoque
+        FROM Produtos p
+        LEFT JOIN Estoque e ON p.ID = e.ProdutoID
+        WHERE p.ID = ?`;
+    db.query(query, [produtoID], (err, results) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        res.json(results);
+    });
+});
+
+// Rota para atualizar um registro de estoque
+app.post('/updateStock/:estoqueID', (req, res) => {
+    const estoqueID = req.params.estoqueID;
+    const { DataMovimentacao, Quantidade, Tipo, Descricao } = req.body;
+    const updateQuery = 'UPDATE Estoque SET DataMovimentacao = ?, Quantidade = ?, Tipo = ?, Descricao = ? WHERE ID = ?';
+    db.query(updateQuery, [DataMovimentacao, Quantidade, Tipo, Descricao, estoqueID], (err, result) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        res.send('Registro de estoque atualizado com sucesso.');
+    });
+});
+
+// Rota para adicionar um novo registro de estoque
+app.post('/addStock', (req, res) => {
+    const { ProdutoID, DataMovimentacao, Quantidade, Tipo, Descricao } = req.body;
+    const checkQuery = 'SELECT * FROM Produtos WHERE ID = ?';
+    db.query(checkQuery, [ProdutoID], (err, results) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        if (results.length === 0) {
+            return res.status(400).send('ProdutoID não encontrado.');
+        }
+        const insertQuery = 'INSERT INTO Estoque (ProdutoID, DataMovimentacao, Quantidade, Tipo, Descricao) VALUES (?, ?, ?, ?, ?)';
+        db.query(insertQuery, [ProdutoID, DataMovimentacao, Quantidade, Tipo, Descricao], (err, result) => {
+            if (err) {
+                return res.status(500).send(err);
+            }
+            res.send('Registro de estoque adicionado com sucesso.');
+        });
+    });
+});
+
+// Rota para remover um registro de estoque
+app.post('/removeStock/:estoqueID', (req, res) => {
+    const estoqueID = req.params.estoqueID;
+    const deleteQuery = 'DELETE FROM Estoque WHERE ID = ?';
+    db.query(deleteQuery, [estoqueID], (err, result) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        res.send('Registro de estoque removido com sucesso.');
+    });
+});
+
+// Rota para buscar um registro de estoque pelo ID
+app.get('/getStock/:estoqueID', (req, res) => {
+    const estoqueID = req.params.estoqueID;
+    const query = 'SELECT * FROM Estoque WHERE ID = ?';
+    db.query(query, [estoqueID], (err, results) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        res.json(results);
+    });
+});
+
 // Iniciar o servidor
 app.listen(port, () => {
     console.log(`Servidor rodando em http://localhost:${port}`);

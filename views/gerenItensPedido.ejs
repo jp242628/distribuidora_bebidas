@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciamento de Produtos</title>
+    <title>Gerenciamento de Itens de Pedido</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -22,12 +22,12 @@
         }
         label {
             display: block;
-            margin-block-end: 10px;
+            margin-bottom: 10px;
         }
         input[type="text"], input[type="number"] {
-            inline-size: 100%;
+            width: 100%;
             padding: 10px;
-            margin-block-end: 20px;
+            margin-bottom: 20px;
             border-radius: 5px;
             border: 1px solid #ccc;
         }
@@ -43,7 +43,7 @@
             background-color: #45a049;
         }
         table {
-            inline-size: 100%;
+            width: 100%;
             border-collapse: collapse;
             margin: 20px 0;
         }
@@ -52,7 +52,7 @@
         }
         th, td {
             padding: 10px;
-            text-align: start;
+            text-align: left;
         }
         th {
             background-color: #f2f2f2;
@@ -61,104 +61,172 @@
 </head>
 <body>
     
-    <h1>Gerenciamento de Produtos</h1>
+    <h1>Gerenciamento de Itens de Pedido</h1>
 
-    <h2>Lista de Produtos</h2>
-    <table id="productsTable">
+    <h2>Lista de Itens de Pedido</h2>
+    <table id="orderItemsTable">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>Descrição</th>
-                <th>Preço</th>
-                <th>Fornecedor ID</th>
+                <th>PedidoID</th>
+                <th>ProdutoID</th>
+                <th>Quantidade</th>
+                <th>Preço Unitário</th>
+                <th>Ações</th>
             </tr>
         </thead>
         <tbody>
-            <!-- Os produtos serão inseridos aqui -->
+            <!-- Os itens de pedido serão inseridos aqui -->
         </tbody>
     </table>
 
-    <h2>Adicionar Produto</h2>
-    <form id="addProductForm">
-        <label for="ID">ID do Produto:</label><br>
-        <input type="number" id="ID" name="ID"><br>
-        <label for="Nome">Nome:</label><br>
-        <input type="text" id="Nome" name="Nome"><br>
-        <label for="Descricao">Descrição:</label><br>
-        <input type="text" id="Descricao" name="Descricao"><br>
-        <label for="Preco">Preço:</label><br>
-        <input type="number" step="0.01" id="Preco" name="Preco"><br>
-        <label for="FornecedorID">Fornecedor ID:</label><br>
-        <input type="number" id="FornecedorID" name="FornecedorID"><br><br>
-        <input type="submit" value="Adicionar Produto">
+    <h2>Atualizar Item de Pedido</h2>
+    <form id="fetchOrderItemForm">
+        <label for="updatePedidoID">ID do Pedido:</label>
+        <input type="number" id="updatePedidoID" name="updatePedidoID">
+        <label for="updateProdutoID">ID do Produto:</label>
+        <input type="number" id="updateProdutoID" name="updateProdutoID">
+        <input type="submit" value="Buscar Item de Pedido">
     </form>
 
-    <h2>Remover Produto</h2>
-    <form id="removeProductForm">
-        <label for="ID">ID do Produto:</label><br>
-        <input type="number" id="ID" name="ID"><br><br>
-        <input type="submit" value="Remover Produto">
+    <form id="updateOrderItemForm" style="display:none;">
+        <label for="updateQuantidade">Quantidade:</label>
+        <input type="number" id="updateQuantidade" name="Quantidade">
+        <label for="updatePrecoUnitario">Preço Unitário:</label>
+        <input type="number" step="0.01" id="updatePrecoUnitario" name="PrecoUnitario">
+        <input type="submit" value="Atualizar Item de Pedido">
     </form>
+
+    <h2>Remover Item de Pedido</h2>
+    <form id="removeOrderItemForm">
+        <label for="removePedidoID">ID do Pedido:</label>
+        <input type="number" id="removePedidoID" name="removePedidoID">
+        <label for="removeProdutoID">ID do Produto:</label>
+        <input type="number" id="removeProdutoID" name="removeProdutoID">
+        <input type="submit" value="Remover Item de Pedido">
+    </form>
+
+    <h2>Detalhes do Pedido</h2>
+    <div id="orderDetails" style="margin-bottom: 20px;">
+        <!-- Detalhes do pedido serão inseridos aqui -->
+    </div>
+
+    <h2>Detalhes do Produto</h2>
+    <div id="productDetails">
+        <!-- Detalhes do produto serão inseridos aqui -->
+    </div>
 
     <script>
-        document.getElementById('addProductForm').addEventListener('submit', function (event) {
+        document.getElementById('fetchOrderItemForm').addEventListener('submit', function (event) {
             event.preventDefault();
-            const formData = new FormData(event.target);
-            const data = Object.fromEntries(formData.entries());
-            fetch('/addProduct', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.text())
-            .then(data => {
-                alert(data);
-                loadProducts();
-            })
-            .catch(error => console.error('Erro:', error));
-        });
-
-        document.getElementById('removeProductForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            const formData = new FormData(event.target);
-            const data = Object.fromEntries(formData.entries());
-            fetch('/removeProduct', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.text())
-            .then(data => {
-                alert(data);
-                loadProducts();
-            })
-            .catch(error => console.error('Erro:', error));
-        });
-
-        function loadProducts() {
-            fetch('/listProducts')
+            const pedidoID = document.getElementById('updatePedidoID').value;
+            const produtoID = document.getElementById('updateProdutoID').value;
+            fetch(`/getOrderItem/${pedidoID}/${produtoID}`)
                 .then(response => response.json())
-                .then(products => {
-                    const productsTableBody = document.querySelector('#productsTable tbody');
-                    productsTableBody.innerHTML = '';
-                    products.forEach(product => {
+                .then(orderItem => {
+                    document.getElementById('updateQuantidade').value = orderItem.Quantidade;
+                    document.getElementById('updatePrecoUnitario').value = orderItem.PrecoUnitario;
+                    document.getElementById('updateOrderItemForm').style.display = 'block';
+                })
+                .catch(error => console.error('Erro:', error));
+        });
+
+        document.getElementById('updateOrderItemForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+            const pedidoID = document.getElementById('updatePedidoID').value;
+            const produtoID = document.getElementById('updateProdutoID').value;
+            fetch(`/updateOrderItem/${pedidoID}/${produtoID}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+                loadOrderItems();
+                document.getElementById('updateOrderItemForm').style.display = 'none';
+            })
+            .catch(error => console.error('Erro:', error));
+        });
+
+        document.getElementById('removeOrderItemForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+            const pedidoID = document.getElementById('removePedidoID').value;
+            const produtoID = document.getElementById('removeProdutoID').value;
+            fetch(`/removeOrderItem/${pedidoID}/${produtoID}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+                loadOrderItems();
+            })
+            .catch(error => console.error('Erro:', error));
+        });
+
+        function loadOrderItems() {
+            fetch('/listOrderItems')
+                .then(response => response.json())
+                .then(orderItems => {
+                    const orderItemsTableBody = document.querySelector('#orderItemsTable tbody');
+                    orderItemsTableBody.innerHTML = '';
+                    orderItems.forEach(orderItem => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
-                            <td>${product.ID}</td>
-                            <td>${product.Nome}</td>
-                            <td>${product.Descricao}</td>
-                            <td>${product.Preco}</td>
-                            <td>${product.FornecedorID}</td>
+                            <td>${orderItem.PedidoID}</td>
+                            <td>${orderItem.ProdutoID}</td>
+                            <td>${orderItem.Quantidade}</td>
+                            <td>${orderItem.PrecoUnitario}</td>
+                            <td>
+                                <button onclick="fetchOrderDetails(${orderItem.PedidoID})">Detalhes do Pedido</button>
+                                <button onclick="fetchProductDetails(${orderItem.ProdutoID})">Detalhes do Produto</button>
+                            </td>
                         `;
-                        productsTableBody.appendChild(row);
+                        orderItemsTableBody.appendChild(row);
                     });
                 })
                 .catch(error => console.error('Erro:', error));
         }
 
-        // Carregar os produtos ao carregar a página
-        document.addEventListener('DOMContentLoaded', loadProducts);
+        function fetchOrderDetails(pedidoID) {
+            fetch(`/getOrder/${pedidoID}`)
+                .then(response => response.json())
+                .then(order => {
+                    const orderDetails = document.getElementById('orderDetails');
+                    orderDetails.innerHTML = `
+                        <p><strong>ID do Pedido:</strong> ${order.ID}</p>
+                        <p><strong>ID do Cliente:</strong> ${order.ClienteID}</p>
+                        <p><strong>Data do Pedido:</strong> ${order.DataPedido}</p>
+                        <p><strong>Status do Pedido:</strong> ${order.StatusPedido}</p>
+                    `;
+                })
+                .catch(error => console.error('Erro:', error));
+        }
+
+        function fetchProductDetails(produtoID) {
+            fetch(`/getProduct/${produtoID}`)
+                .then(response => response.json())
+                .then(product => {
+                    const productDetails = document.getElementById('productDetails');
+                    productDetails.innerHTML = `
+                        <p><strong>ID do Produto:</strong> ${product.ID}</p>
+                        <p><strong>Nome do Produto:</strong> ${product.Nome}</p>
+                        <p><strong>Descrição:</strong> ${product.Descricao}</p>
+                        <p><strong>Preço:</strong> ${product.Preco}</p>
+                    `;
+                })
+                .catch(error => console.error('Erro:', error));
+        }
+
+        // Carregar os itens de pedido ao carregar a página
+        document.addEventListener('DOMContentLoaded', function () {
+            loadOrderItems();
+        });
     </script>
 </body>
 </html>

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciamento de Produtos</title>
+    <title>Gerenciamento de Estoque</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -24,7 +24,7 @@
             display: block;
             margin-block-end: 10px;
         }
-        input[type="text"], input[type="number"] {
+        input[type="text"], input[type="number"], input[type="date"], select {
             inline-size: 100%;
             padding: 10px;
             margin-block-end: 20px;
@@ -61,104 +61,195 @@
 </head>
 <body>
     
-    <h1>Gerenciamento de Produtos</h1>
+    <h1>Gerenciamento de Estoque</h1>
 
-    <h2>Lista de Produtos</h2>
-    <table id="productsTable">
+    <h2>Lista de Estoque</h2>
+    <table id="stockTable">
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Nome</th>
+                <th>Produto</th>
+                <th>Data Movimentação</th>
+                <th>Quantidade</th>
+                <th>Tipo</th>
                 <th>Descrição</th>
-                <th>Preço</th>
-                <th>Fornecedor ID</th>
+                <th>Ações</th>
             </tr>
         </thead>
         <tbody>
-            <!-- Os produtos serão inseridos aqui -->
+            <!-- Os registros de estoque serão inseridos aqui -->
         </tbody>
     </table>
 
-    <h2>Adicionar Produto</h2>
-    <form id="addProductForm">
-        <label for="ID">ID do Produto:</label><br>
-        <input type="number" id="ID" name="ID"><br>
-        <label for="Nome">Nome:</label><br>
-        <input type="text" id="Nome" name="Nome"><br>
-        <label for="Descricao">Descrição:</label><br>
-        <input type="text" id="Descricao" name="Descricao"><br>
-        <label for="Preco">Preço:</label><br>
-        <input type="number" step="0.01" id="Preco" name="Preco"><br>
-        <label for="FornecedorID">Fornecedor ID:</label><br>
-        <input type="number" id="FornecedorID" name="FornecedorID"><br><br>
-        <input type="submit" value="Adicionar Produto">
+    <h2>Atualizar Registro de Estoque</h2>
+    <form id="fetchStockForm">
+        <label for="updateEstoqueID">ID do Registro de Estoque:</label>
+        <input type="number" id="updateEstoqueID" name="updateEstoqueID">
+        <input type="submit" value="Buscar Registro de Estoque">
     </form>
 
-    <h2>Remover Produto</h2>
-    <form id="removeProductForm">
-        <label for="ID">ID do Produto:</label><br>
-        <input type="number" id="ID" name="ID"><br><br>
-        <input type="submit" value="Remover Produto">
+    <form id="updateStockForm" style="display:none;">
+        <label for="updateDataMovimentacao">Data Movimentação:</label>
+        <input type="date" id="updateDataMovimentacao" name="DataMovimentacao">
+        <label for="updateQuantidade">Quantidade:</label>
+        <input type="number" id="updateQuantidade" name="Quantidade">
+        <label for="updateTipo">Tipo:</label>
+        <select id="updateTipo" name="Tipo">
+            <option value="entrada">Entrada</option>
+            <option value="saída">Saída</option>
+        </select>
+        <label for="updateDescricao">Descrição:</label>
+        <input type="text" id="updateDescricao" name="Descricao">
+        <input type="submit" value="Atualizar Registro de Estoque">
     </form>
+
+    <h2>Adicionar Registro de Estoque</h2>
+    <form id="addStockForm">
+        <label for="addProdutoID">ID do Produto:</label>
+        <input type="number" id="addProdutoID" name="ProdutoID">
+        <label for="addDataMovimentacao">Data Movimentação:</label>
+        <input type="date" id="addDataMovimentacao" name="DataMovimentacao">
+        <label for="addQuantidade">Quantidade:</label>
+        <input type="number" id="addQuantidade" name="Quantidade">
+        <label for="addTipo">Tipo:</label>
+        <select id="addTipo" name="Tipo">
+            <option value="entrada">Entrada</option>
+            <option value="saída">Saída</option>
+        </select>
+        <label for="addDescricao">Descrição:</label>
+        <input type="text" id="addDescricao" name="Descricao">
+        <input type="submit" value="Adicionar Registro de Estoque">
+    </form>
+
+    <h2>Remover Registro de Estoque</h2>
+    <form id="removeStockForm">
+        <label for="removeEstoqueID">ID do Registro de Estoque:</label>
+        <input type="number" id="removeEstoqueID" name="removeEstoqueID">
+        <input type="submit" value="Remover Registro de Estoque">
+    </form>
+
+    <h2>Detalhes do Produto</h2>
+    <div id="productDetails">
+        <!-- Detalhes do produto serão inseridos aqui -->
+    </div>
 
     <script>
-        document.getElementById('addProductForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            const formData = new FormData(event.target);
-            const data = Object.fromEntries(formData.entries());
-            fetch('/addProduct', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.text())
-            .then(data => {
-                alert(data);
-                loadProducts();
-            })
-            .catch(error => console.error('Erro:', error));
-        });
-
-        document.getElementById('removeProductForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            const formData = new FormData(event.target);
-            const data = Object.fromEntries(formData.entries());
-            fetch('/removeProduct', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.text())
-            .then(data => {
-                alert(data);
-                loadProducts();
-            })
-            .catch(error => console.error('Erro:', error));
-        });
-
-        function loadProducts() {
-            fetch('/listProducts')
+        // Função para carregar os registros de estoque ao carregar a página
+        function loadStock() {
+            fetch('/listStock')
                 .then(response => response.json())
-                .then(products => {
-                    const productsTableBody = document.querySelector('#productsTable tbody');
-                    productsTableBody.innerHTML = '';
-                    products.forEach(product => {
+                .then(stock => {
+                    const stockTableBody = document.querySelector('#stockTable tbody');
+                    stockTableBody.innerHTML = '';
+                    stock.forEach(item => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
-                            <td>${product.ID}</td>
-                            <td>${product.Nome}</td>
-                            <td>${product.Descricao}</td>
-                            <td>${product.Preco}</td>
-                            <td>${product.FornecedorID}</td>
+                            <td>${item.ID}</td>
+                            <td>${item.Nome}</td>
+                            <td>${item.DataMovimentacao}</td>
+                            <td>${item.Quantidade}</td>
+                            <td>${item.Tipo}</td>
+                            <td>${item.Descricao}</td>
+                            <td>
+                                <button onclick="fetchStockDetails(${item.ProdutoID})">Detalhes do Produto</button>
+                            </td>
                         `;
-                        productsTableBody.appendChild(row);
+                        stockTableBody.appendChild(row);
                     });
                 })
                 .catch(error => console.error('Erro:', error));
         }
 
-        // Carregar os produtos ao carregar a página
-        document.addEventListener('DOMContentLoaded', loadProducts);
+        // Função para buscar e preencher os detalhes do produto
+        function fetchStockDetails(produtoID) {
+            fetch(`/getProductStock/${produtoID}`)
+                .then(response => response.json())
+                .then(data => {
+                    const productDetailsDiv = document.getElementById('productDetails');
+                    productDetailsDiv.innerHTML = `
+                        <h3>Detalhes do Produto</h3>
+                        <p><strong>ID do Produto:</strong> ${data[0].ID}</p>
+                        <p><strong>Nome do Produto:</strong> ${data[0].Nome}</p>
+                        <p><strong>Descrição:</strong> ${data[0].Descricao}</p>
+                        <p><strong>Preço:</strong> ${data[0].Preco}</p>
+                    `;
+                })
+                .catch(error => console.error('Erro:', error));
+        }
+
+        // Função para buscar um registro de estoque pelo ID e preencher o formulário de atualização
+        document.getElementById('fetchStockForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const estoqueID = document.getElementById('updateEstoqueID').value;
+            fetch(`/getStock/${estoqueID}`)
+                .then(response => response.json())
+                .then(data => {
+                    const updateStockForm = document.getElementById('updateStockForm');
+                    updateStockForm.style.display = 'block';
+                    updateStockForm.querySelector('#updateDataMovimentacao').value = data[0].DataMovimentacao;
+                    updateStockForm.querySelector('#updateQuantidade').value = data[0].Quantidade;
+                    updateStockForm.querySelector('#updateTipo').value = data[0].Tipo;
+                    updateStockForm.querySelector('#updateDescricao').value = data[0].Descricao;
+                })
+                .catch(error => console.error('Erro:', error));
+        });
+        // Função para atualizar um registro de estoque
+        document.getElementById('updateStockForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const estoqueID = document.getElementById('updateEstoqueID').value;
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+            fetch(`/updateStock/${estoqueID}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+                loadStock();
+                document.getElementById('updateStockForm').style.display = 'none';
+            })
+            .catch(error => console.error('Erro:', error));
+        });
+
+        // Função para adicionar um registro de estoque
+        document.getElementById('addStockForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+            fetch('/addStock', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+                loadStock();
+            })
+            .catch(error => console.error('Erro:', error));
+        });
+
+        // Função para remover um registro de estoque
+        document.getElementById('removeStockForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const estoqueID = document.getElementById('removeEstoqueID').value;
+            fetch(`/removeStock/${estoqueID}`, {
+                method: 'POST'
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+                loadStock();
+            })
+            .catch(error => console.error('Erro:', error));
+        });
+
+        // Carregar os registros de estoque ao carregar a página
+        document.addEventListener('DOMContentLoaded', function () {
+            loadStock();
+        });
     </script>
 </body>
 </html>
