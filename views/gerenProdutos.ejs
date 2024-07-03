@@ -141,14 +141,16 @@
             event.preventDefault();
             const formData = new FormData(event.target);
             const data = Object.fromEntries(formData.entries());
-            fetch('/removeProduct', {
+            
+            // Antes de excluir o produto, verificar se há itenspedido relacionados
+            fetch(`/removeProduct/${data.ID}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             })
-            .then(response => response.text())
-            .then(data => {
-                alert(data);
+            .then(response => response.json())
+            .then(result => {
+                alert(result.message);
                 loadProducts();
             })
             .catch(error => console.error('Erro:', error));

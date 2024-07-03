@@ -60,15 +60,42 @@ app.post('/addProduct', (req, res) => {
     });
 });
 
-// Rota para remover um produto
-app.post('/removeProduct', (req, res) => {
-    const { ID } = req.body;
-    const query = 'DELETE FROM Produtos WHERE ID = ?';
-    db.query(query, [ID], (err, result) => {
+// Rota para remover um produto, verificando itenspedido relacionados
+app.post('/removeProduct/:id', (req, res) => {
+    const { id } = req.params;
+    const queryCheck = 'SELECT * FROM itenspedido WHERE ProdutoID = ?';
+    const deleteQuery = 'DELETE FROM Produtos WHERE ID = ?';
+
+    // Verificar se há itenspedido relacionados ao produto
+    db.query(queryCheck, [id], (err, results) => {
         if (err) {
             return res.status(500).send(err);
         }
-        res.send('Produto removido com sucesso.');
+
+        // Se houver itenspedido relacionados, remova-os primeiro
+        if (results.length > 0) {
+            const deleteItemsQuery = 'DELETE FROM itenspedido WHERE ProdutoID = ?';
+            db.query(deleteItemsQuery, [id], (err) => {
+                if (err) {
+                    return res.status(500).send(err);
+                }
+                // Após remover itenspedido, exclua o produto
+                db.query(deleteQuery, [id], (err, result) => {
+                    if (err) {
+                        return res.status(500).send(err);
+                    }
+                    res.json({ message: 'Produto removido com sucesso.' });
+                });
+            });
+        } else {
+            // Se não houver itenspedido relacionados, exclua diretamente o produto
+            db.query(deleteQuery, [id], (err, result) => {
+                if (err) {
+                    return res.status(500).send(err);
+                }
+                res.json({ message: 'Produto removido com sucesso.' });
+            });
+        }
     });
 });
 

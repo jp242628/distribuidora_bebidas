@@ -214,7 +214,7 @@
                 <button onclick="redirectToLogin()" class="adicionar-sacola">Adicionar à sacola</button>
             <% } else { %>
                 <!-- Adicionar à sacola -->
-                <button onclick="addToCart(88)" class="adicionar-sacola">Adicionar à sacola</button>
+                <button onclick="addToCart(89)" class="adicionar-sacola">Adicionar à sacola</button>
             <% } %>
         </div>
         <!-- Repetir para outros produtos -->
@@ -233,7 +233,7 @@
             <% if (!user) { %>
                 <button onclick="redirectToLogin()" class="adicionar-sacola">Adicionar à sacola</button>
             <% } else { %>
-                <button onclick="addToCart(1)" class="adicionar-sacola">Adicionar à sacola</button>
+                <button onclick="addToCart(90)" class="adicionar-sacola">Adicionar à sacola</button>
             <% } %>
         </div>
         <!-- Repetir para outros produtos -->
@@ -252,7 +252,7 @@
             <% if (!user) { %>
                 <button onclick="redirectToLogin()" class="adicionar-sacola">Adicionar à sacola</button>
             <% } else { %>
-                <button onclick="addToCart(2)" class="adicionar-sacola">Adicionar à sacola</button>
+                <button onclick="addToCart(91)" class="adicionar-sacola">Adicionar à sacola</button>
             <% } %>
         </div>
         <!-- Repetir para outros produtos -->
@@ -271,7 +271,7 @@
             <% if (!user) { %>
                 <button onclick="redirectToLogin()" class="adicionar-sacola">Adicionar à sacola</button>
             <% } else { %>
-                <button onclick="addToCart(3)" class="adicionar-sacola">Adicionar à sacola</button>
+                <button onclick="addToCart(92)" class="adicionar-sacola">Adicionar à sacola</button>
             <% } %>
         </div>
         <!-- Repetir para outros produtos -->
@@ -290,7 +290,7 @@
             <% if (!user) { %>
                 <button onclick="redirectToLogin()" class="adicionar-sacola">Adicionar à sacola</button>
             <% } else { %>
-                <button onclick="addToCart(4)" class="adicionar-sacola">Adicionar à sacola</button>
+                <button onclick="addToCart(93)" class="adicionar-sacola">Adicionar à sacola</button>
             <% } %>
         </div>
         <!-- Repetir para outros produtos -->
@@ -335,14 +335,60 @@
     }
     let cartItems = []; // Array para armazenar itens da sacola
 
-function addToCart(productId) {
-    // Aqui você pode adicionar lógica para buscar informações do produto pelo ID, se necessário
-    const product = {
-        id: productId,
-        name: 'Brahma 300ml', // Nome do produto
-        price: 3.50, // Preço do produto
-        quantity: 1 // Quantidade inicial
-    };
+    function addToCart(productId) {
+    let product = {}; // Objeto vazio para armazenar informações do produto
+
+    // Determinar o produto com base no productId
+    switch(productId) {
+        case 89:
+            product = {
+                id: 89,
+                name: 'Brahma 300ml',
+                price: 3.50,
+                quantity: 1,
+                image: '/Garrafa_de_Cerveja_Brahma_Chope_300ML_PNG_Transparente_Sem_Fundo.png' // Caminho da imagem do produto
+            };
+            break;
+        case 90:
+            product = {
+                id: 90,
+                name: 'Beats Senses 1L',
+                price: 15.99,
+                quantity: 1,
+                image: 'Beats_Senses_1L.png' // Caminho da imagem do produto
+            };
+            break;
+        case 91:
+            product = {
+                id: 91,
+                name: 'Vinho Tinto Malbec Novecento 750ml',
+                price: 29.99,
+                quantity: 1,
+                image: 'Vinho_Tinto_Malbec_Novecento_750ml.png' // Caminho da imagem do produto
+            };
+            break;
+        case 92:
+            product = {
+                id: 92,
+                name: 'Whisky Johnnie Walker Red Label 1L',
+                price: 79.99,
+                quantity: 1,
+                image: 'Whisky_Red_Label_PNG_Transparente_Sem_Fundo.png' // Caminho da imagem do produto
+            };
+            break;
+        case 93:
+            product = {
+                id: 93,
+                name: 'Sacola Embalada Com Gelo',
+                price: 5.00,
+                quantity: 1,
+                image: 'Sacola_Embalada_Com_Gelo.png' // Caminho da imagem do produto
+            };
+            break;
+        default:
+            console.error('Produto não encontrado');
+            return;
+    }
 
     // Verifica se o produto já está na sacola
     const existingItem = cartItems.find(item => item.id === productId);
@@ -374,7 +420,7 @@ function renderCartItems() {
         const itemDiv = document.createElement('div');
         itemDiv.classList.add('cart-item');
         itemDiv.innerHTML = `
-            <img src="/Garrafa_de_Cerveja_Brahma_Chope_300ML_PNG_Transparente_Sem_Fundo.png" alt="${item.name}">
+            <img src="${item.image}" alt="${item.name}">
             <span>${item.name}</span>
             <span>R$ ${item.price.toFixed(2)}</span>
             <input type="number" min="1" value="${item.quantity}" onchange="updateCartItem(${item.id}, this.value)">
