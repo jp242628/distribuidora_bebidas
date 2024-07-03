@@ -1,5 +1,5 @@
 const express = require('express');
-const mysql = require('mysql');
+const mysql = require('mysql'); // Use mysql2 ao invés de mysql
 const bodyParser = require('body-parser');
 const path = require('path');
 const session = require('express-session'); // Adicionado
@@ -15,6 +15,17 @@ const dbConfig = {
 };
 
 const db = mysql.createConnection(dbConfig);
+
+const pool = mysql.createPool(dbConfig);
+
+// Middleware para verificar se o usuário está autenticado
+function isAuthenticated(req, res, next) {
+    if (req.session.user) {
+        return next();
+    } else {
+        res.status(401).json({ message: 'Usuário não autenticado' });
+    }
+}
 
 db.connect((err) => {
     if (err) {
@@ -33,10 +44,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public'))); // Middleware para servir arquivos estáticos
 
 // Middleware de sessão
+// Configurações de sessão
 app.use(session({
-    secret: 'your-secret-key',
+    secret: 'secret',
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: true,
+    cookie: { secure: false }
 }));
 
 // Rota para adicionar um produto
@@ -720,6 +733,76 @@ app.get('/getStock/:estoqueID', (req, res) => {
         res.json(results);
     });
 });
+
+
+// Rota para buscar informações de um produto
+app.get('/produto/:id', (req, res) => {
+    const productId = req.params.id;
+
+    pool.query('SELECT * FROM Produtos WHERE ID = ?', [productId], (error, results) => {
+        if (error) {
+            console.error(error);
+            return res.status(500).json({ message: 'Erro ao buscar produto' });
+        }
+        if (results.length === 0) {
+            return res.status(404).json({ message: 'Produto não encontrado' });
+        }
+
+        const product = results[0];
+        res.json({
+            id: product.ID,
+            name: product.Nome,
+            price: product.Preco,
+            image: getImagePath(product.Nome) // Função para obter o caminho da imagem do produto
+        });
+    });
+});
+
+// Função para obter o caminho da imagem do produto (você pode ajustar conforme necessário)
+function getImagePath(productName) {
+    switch (productName) {
+        case 'Brahma 300ml':
+            return '/Garrafa_de_Cerveja_Brahma_Chope_300ML_PNG_Transparente_Sem_Fundo.png';
+        case 'Beats Senses 1L':
+            return 'Beats_Senses_1L.png';
+        case 'Vinho Tinto Malbec Novecento 750ml':
+            return 'Vinho_Tinto_Malbec_Novecento_750ml.png';
+        case 'Whisky Johnnie Walker Red Label 1L':
+            return 'Whisky_Red_Label_PNG_Transparente_Sem_Fundo.png';
+        case 'Sacola Embalada Com Gelo':
+            return 'Sacola_Embalada_Com_Gelo.png';
+        default:
+            return 'default.png';
+    }
+}
+
+// Rota para finalizar pedido
+app.post('/finalizar-pedido', isAuthenticated, async (req, res) => {
+    const { cartItems } = req.body;
+    const userId = req.session.user.ID;
+
+    try {
+        await db.beginTransaction();
+        const [resultPedido] = await db.query('INSERT INTO Pedidos (ClienteID, DataPedido, StatusPedido) VALUES (?, CURRENT_DATE, ?)', [userId, 'Pendente']);
+        const pedidoId = resultPedido.insertId;
+
+        for (const item of cartItems) {
+            await db.query('INSERT INTO ItensPedido (PedidoID, ProdutoID, Quantidade, PrecoUnitario) VALUES (?, ?, ?, ?)', [pedidoId, item.id, item.quantity, item.price]);
+        }
+
+        await db.commit();
+        res.json({ message: 'Pedido finalizado com sucesso' });
+    } catch (error) {
+        await db.rollback();
+        res.status(500).json({ message: 'Erro ao finalizar pedido' });
+    }
+});
+
+app.use((req, res, next) => {
+    console.log('Sessão:', req.session);
+    next();
+});
+
 
 // Iniciar o servidor
 app.listen(port, () => {

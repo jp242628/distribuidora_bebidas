@@ -371,147 +371,101 @@
         alert('Você precisa estar logado para adicionar itens à sacola');
         window.location.href = '/login'; // Redirecionar para a página de login
     }
+    
     let cartItems = []; // Array para armazenar itens da sacola
 
-    function addToCart(productId) {
-    let product = {}; // Objeto vazio para armazenar informações do produto
+    async function addToCart(productId) {
+        try {
+            const response = await fetch(`/produto/${productId}`);
+            if (!response.ok) throw new Error('Produto não encontrado ou fora de estoque');
+            const product = await response.json();
 
-    // Determinar o produto com base no productId
-    switch(productId) {
-        case 89:
-            product = {
-                id: 89,
-                name: 'Brahma 300ml',
-                price: 3.50,
-                quantity: 1,
-                image: '/Garrafa_de_Cerveja_Brahma_Chope_300ML_PNG_Transparente_Sem_Fundo.png' // Caminho da imagem do produto
-            };
-            break;
-        case 90:
-            product = {
-                id: 90,
-                name: 'Beats Senses 1L',
-                price: 15.99,
-                quantity: 1,
-                image: 'Beats_Senses_1L.png' // Caminho da imagem do produto
-            };
-            break;
-        case 91:
-            product = {
-                id: 91,
-                name: 'Vinho Tinto Malbec Novecento 750ml',
-                price: 29.99,
-                quantity: 1,
-                image: 'Vinho_Tinto_Malbec_Novecento_750ml.png' // Caminho da imagem do produto
-            };
-            break;
-        case 92:
-            product = {
-                id: 92,
-                name: 'Whisky Johnnie Walker Red Label 1L',
-                price: 79.99,
-                quantity: 1,
-                image: 'Whisky_Red_Label_PNG_Transparente_Sem_Fundo.png' // Caminho da imagem do produto
-            };
-            break;
-        case 93:
-            product = {
-                id: 93,
-                name: 'Sacola Embalada Com Gelo',
-                price: 5.00,
-                quantity: 1,
-                image: 'Sacola_Embalada_Com_Gelo.png' // Caminho da imagem do produto
-            };
-            break;
-        default:
-            console.error('Produto não encontrado');
-            return;
+            const existingItem = cartItems.find(item => item.id === productId);
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cartItems.push({ ...product, quantity: 1 });
+            }
+
+            updateCartCount();
+            renderCartItems();
+        } catch (error) {
+            alert(error.message);
+        }
     }
 
-    // Verifica se o produto já está na sacola
-    const existingItem = cartItems.find(item => item.id === productId);
-    if (existingItem) {
-        // Se o produto já existe na sacola, aumenta a quantidade
-        existingItem.quantity++;
-    } else {
-        // Caso contrário, adiciona o novo produto à sacola
-        cartItems.push(product);
+    function updateCartCount() {
+        const itemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+        document.querySelector('.item-count').textContent = itemCount;
     }
 
-    // Atualiza a contagem de itens no botão da sacola
-    updateCartCount();
+    function renderCartItems() {
+        const cartContainer = document.getElementById('cart-items');
+        cartContainer.innerHTML = ''; // Limpa o conteúdo anterior
 
-    // Atualiza a exibição da sacola dropdown
-    renderCartItems();
-}
+        cartItems.forEach(item => {
+            const itemDiv = document.createElement('div');
+            itemDiv.classList.add('cart-item');
+            itemDiv.innerHTML = `
+                <img src="${item.image}" alt="${item.name}">
+                <span>${item.name}</span>
+                <span>R$ ${item.price.toFixed(2)}</span>
+                <input type="number" min="1" value="${item.quantity}" onchange="updateCartItem(${item.id}, this.value)">
+                <button onclick="removeCartItem(${item.id})">Remover</button>
+            `;
+            cartContainer.appendChild(itemDiv);
+        });
 
-function updateCartCount() {
-    const itemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
-    document.querySelector('.item-count').textContent = itemCount;
-}
-
-function renderCartItems() {
-    const cartContainer = document.getElementById('cart-items');
-    cartContainer.innerHTML = ''; // Limpa o conteúdo anterior
-
-    cartItems.forEach(item => {
-        const itemDiv = document.createElement('div');
-        itemDiv.classList.add('cart-item');
-        itemDiv.innerHTML = `
-            <img src="${item.image}" alt="${item.name}">
-            <span>${item.name}</span>
-            <span>R$ ${item.price.toFixed(2)}</span>
-            <input type="number" min="1" value="${item.quantity}" onchange="updateCartItem(${item.id}, this.value)">
-            <button onclick="removeCartItem(${item.id})">Remover</button>
-        `;
-        cartContainer.appendChild(itemDiv);
-    });
-
-    // Atualiza o total da sacola
-    updateCartTotal();
-}
-
-function updateCartItem(productId, newQuantity) {
-    const item = cartItems.find(item => item.id === productId);
-    if (item) {
-        item.quantity = parseInt(newQuantity);
-        updateCartCount();
         updateCartTotal();
     }
-}
 
-function removeCartItem(productId) {
-    cartItems = cartItems.filter(item => item.id !== productId);
-    updateCartCount();
-    renderCartItems();
-}
+    function updateCartItem(productId, newQuantity) {
+        const item = cartItems.find(item => item.id === productId);
+        if (item) {
+            item.quantity = parseInt(newQuantity);
+            updateCartCount();
+            updateCartTotal();
+        }
+    }
 
-function updateCartTotal() {
-    const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    document.getElementById('cart-total').textContent = `Total: R$ ${total.toFixed(2)}`;
-}
-
-function toggleSacolaDropdown() {
-    const sacolaContent = document.querySelector('.sacola-content');
-    sacolaContent.style.display = sacolaContent.style.display === 'block' ? 'none' : 'block';
-}
-
-function finalizeOrder() {
-    if (confirm('Tem certeza que deseja finalizar o pedido?')) {
-        // Aqui você pode implementar a lógica para enviar o pedido para o servidor
-        // e adicionar na tabela de Pedidos no banco de dados
-        alert('Pedido finalizado com sucesso!');
-        // Limpa a sacola após finalizar o pedido
-        cartItems = [];
+    function removeCartItem(productId) {
+        cartItems = cartItems.filter(item => item.id !== productId);
         updateCartCount();
         renderCartItems();
-        updateCartTotal();
     }
-}
 
-document.addEventListener('DOMContentLoaded', () => {
-    updateCartCount(); // Atualiza a contagem inicial de itens na sacola
-});
+    function updateCartTotal() {
+        const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        document.getElementById('cart-total').textContent = `Total: R$ ${total.toFixed(2)}`;
+    }
+
+    function toggleSacolaDropdown() {
+        const sacolaContent = document.querySelector('.sacola-content');
+        sacolaContent.style.display = sacolaContent.style.display === 'block' ? 'none' : 'block';
+    }
+
+    async function finalizeOrder() {
+        if (confirm('Tem certeza que deseja finalizar o pedido?')) {
+            try {
+                const response = await fetch('/finalizar-pedido', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ cartItems })
+                });
+
+                if (!response.ok) throw new Error('Erro ao finalizar pedido');
+
+                alert('Pedido finalizado com sucesso!');
+                cartItems = [];
+                updateCartCount();
+                renderCartItems();
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+    }
 
 </script>
 
