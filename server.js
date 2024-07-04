@@ -777,49 +777,54 @@ function getImagePath(productName) {
 
 // Rota para finalizar o pedido
 app.post('/finalizar-pedido', isAuthenticated, async (req, res) => {
-    console.log('UserID:', req.session.user); // Check if userID is correctly defined
+    console.log('UserID:', req.session.user); // Verificar se o userID está definido corretamente
     const { cartItems } = req.body;
-    const userId = req.session.user.ID; // Ensure you're accessing the correct user ID
+    const userId = req.session.user.ID; // Ajuste para acessar corretamente o ID do usuário na sessão
 
-    // Verify user authentication
+    // Verificar se o usuário está autenticado
     if (!userId) {
         return res.status(401).json({ message: 'Usuário não autenticado' });
     }
 
     try {
-        // Start transaction
+        // Iniciar transação
         await pool.query('START TRANSACTION');
 
-        // Insert order
+        // Criar pedido
         const resultPedido = await pool.query(
             'INSERT INTO Pedidos (ClienteID, DataPedido, StatusPedido) VALUES (?, CURRENT_DATE, ?)',
             [userId, 'Pendente']
         );
 
-        const pedidoId = resultPedido.insertId; // Obtain the inserted ID
+        // Obter o ID do pedido inserido
+        const pedidoId = resultPedido.insertId; // Obter o ID do pedido inserido
 
-        // Insert order items
+        // Criar itens do pedido
         for (const item of cartItems) {
-            await pool.query(
-                'INSERT INTO ItensPedido (PedidoID, ProdutoID, Quantidade, PrecoUnitario) VALUES (?, ?, ?, ?)',
-                [pedidoId, item.id, item.quantity, item.price]
-            );
+            console.log(`Inserindo item: PedidoID=${pedidoId}, ProdutoID=${item.id}, Quantidade=${item.quantity}, PrecoUnitario=${item.price}`);
+            try {
+                const resultItemPedido = await pool.query(
+                    'INSERT INTO ItensPedido (PedidoID, ProdutoID, Quantidade, PrecoUnitario) VALUES (?, ?, ?, ?)',
+                    [pedidoId, item.id, item.quantity, item.price]
+                );
+                console.log('Item do pedido inserido:', resultItemPedido);
+            } catch (error) {
+                console.error('Erro ao inserir item do pedido:', error);
+                throw new Error('Erro ao inserir item do pedido');
+            }
         }
 
-        // Commit transaction
+        // Confirmar transação
         await pool.query('COMMIT');
         res.json({ message: 'Pedido finalizado com sucesso' });
 
     } catch (error) {
-        // Rollback transaction on error
+        // Reverter transação em caso de erro
         await pool.query('ROLLBACK');
         console.error(error);
         res.status(500).json({ message: 'Erro ao finalizar pedido' });
     }
 });
-
-
-
 
 // Iniciar o servidor
 app.listen(port, () => {

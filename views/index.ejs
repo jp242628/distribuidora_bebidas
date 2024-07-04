@@ -120,8 +120,8 @@
 
     .item-count {
         position: absolute;
-        top: -5px;
-        right: -5px;
+        inset-block-start: -5px;
+        inset-inline-end: -5px;
         background-color: red;
         color: white;
         border-radius: 50%;
@@ -131,13 +131,13 @@
 
     .sacola-content {
         position: absolute;
-        top: 40px;
-        right: 0;
+        inset-block-start: 40px;
+        inset-inline-end: 0;
         background-color: #fff;
         box-shadow: 0 0 10px rgba(0,0,0,0.1);
         padding: 10px;
         border-radius: 8px;
-        min-width: 200px;
+        min-inline-size: 200px;
         z-index: 1;
         color: #000; /* Alterar a cor do texto para preto */
     }
@@ -146,13 +146,13 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 10px;
+        margin-block-end: 10px;
     }
 
     .cart-item img {
-        max-width: 50px;
-        max-height: 50px;
-        margin-right: 10px;
+        max-inline-size: 50px;
+        max-block-size: 50px;
+        margin-inline-end: 10px;
     }
 
     .cart-item button {
