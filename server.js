@@ -15,7 +15,6 @@ const dbConfig = {
 };
 
 const db = mysql.createConnection(dbConfig);
-
 const pool = mysql.createPool(dbConfig);
 
 // Middleware para verificar se o usuário está autenticado
@@ -776,32 +775,50 @@ function getImagePath(productName) {
     }
 }
 
-// Rota para finalizar pedido
+// Rota para finalizar o pedido
 app.post('/finalizar-pedido', isAuthenticated, async (req, res) => {
+    console.log('UserID:', req.session.user); // Check if userID is correctly defined
     const { cartItems } = req.body;
-    const userId = req.session.user.ID;
+    const userId = req.session.user.ID; // Ensure you're accessing the correct user ID
+
+    // Verify user authentication
+    if (!userId) {
+        return res.status(401).json({ message: 'Usuário não autenticado' });
+    }
 
     try {
-        await db.beginTransaction();
-        const [resultPedido] = await db.query('INSERT INTO Pedidos (ClienteID, DataPedido, StatusPedido) VALUES (?, CURRENT_DATE, ?)', [userId, 'Pendente']);
-        const pedidoId = resultPedido.insertId;
+        // Start transaction
+        await pool.query('START TRANSACTION');
 
+        // Insert order
+        const resultPedido = await pool.query(
+            'INSERT INTO Pedidos (ClienteID, DataPedido, StatusPedido) VALUES (?, CURRENT_DATE, ?)',
+            [userId, 'Pendente']
+        );
+
+        const pedidoId = resultPedido.insertId; // Obtain the inserted ID
+
+        // Insert order items
         for (const item of cartItems) {
-            await db.query('INSERT INTO ItensPedido (PedidoID, ProdutoID, Quantidade, PrecoUnitario) VALUES (?, ?, ?, ?)', [pedidoId, item.id, item.quantity, item.price]);
+            await pool.query(
+                'INSERT INTO ItensPedido (PedidoID, ProdutoID, Quantidade, PrecoUnitario) VALUES (?, ?, ?, ?)',
+                [pedidoId, item.id, item.quantity, item.price]
+            );
         }
 
-        await db.commit();
+        // Commit transaction
+        await pool.query('COMMIT');
         res.json({ message: 'Pedido finalizado com sucesso' });
+
     } catch (error) {
-        await db.rollback();
+        // Rollback transaction on error
+        await pool.query('ROLLBACK');
+        console.error(error);
         res.status(500).json({ message: 'Erro ao finalizar pedido' });
     }
 });
 
-app.use((req, res, next) => {
-    console.log('Sessão:', req.session);
-    next();
-});
+
 
 
 // Iniciar o servidor
